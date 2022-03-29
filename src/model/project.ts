@@ -26,6 +26,8 @@ import { liveReloadURL } from "../constants";
 
 import { aceController } from "../skulpt-connection/code-editor";
 
+import {PythonCode } from "./frames-editing"
+
 type FocusDestination = "editor" | "running-project";
 
 // TODO: Any way to avoid duplicating information between the
@@ -593,7 +595,18 @@ export const activeProject: IActiveProject = {
         project.trackedTutorial?.activeChapterIndex
       );
 
-      const buildOutcome = await build(project, appendOutput, recordError);
+      const framesEditor = helpers.getStoreState().framesEditor;
+      const python_code = PythonCode(framesEditor.frames);
+
+      const editor_project:IProjectContent=
+      {
+        name: "Editor Project",
+        id:123,
+        codeText: python_code,
+        assets: [],
+      };
+
+      const buildOutcome = await build(editor_project, appendOutput, recordError);
       console.log("build outcome:", buildOutcome);
 
       if (buildOutcome.kind === BuildOutcomeKind.Success) {

@@ -9,5 +9,13 @@ export type CodeAsFramesProps = {
 
 export const CodeAsFrames: React.FC<CodeAsFramesProps> = (props) => {
   const frames = props.frames.map((f) => <Frame {...f} key={f.frame.id} />);
-  return <div className="frames-editor">{frames}</div>;
+  return (
+    <>
+      <div className="frames-editor">
+        <div className="frame">{"import pytch"}</div>
+        <div className="frame">{"import random"}</div>
+        {frames}
+      </div>
+    </>
+  );
 };

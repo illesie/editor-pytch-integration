@@ -2,25 +2,23 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import {
   Editable,
-  CommentFrame as CommentFrameT,
-  makeCommentFrame,
+  StatementFrame as StatementFrameT,
+  makeStatementFrame,
 } from "../../model/frames-editing";
 
-export const CommentFrame: React.FC<Editable<CommentFrameT>> = (props) => {
-  const [text, setText] = useState(props.frame.commentText);
+export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
+  const [text, setText] = useState(props.frame.statementText);
+
   const editState = props.editState;
   switch (editState.status) {
     case "saved":
-      return <div># {props.frame.commentText}</div>;
+      return <div> {props.frame.statementText}</div>;
     case "being-edited": {
-      const save = () =>{
-        editState.save(makeCommentFrame({ commentText: text }));
-      }
-        
+      const save = () =>
+        editState.save(makeStatementFrame({ statementText: text }));
 
       return (
         <div>
-          #{" "}
           <Form.Control
             type="text"
             value={text}

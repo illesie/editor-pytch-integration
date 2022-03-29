@@ -11,7 +11,8 @@ import { PytchAceAutoCompleter } from "../skulpt-connection/code-completion";
 import { failIfNull } from "../utils";
 import { HelpSidebar, HelpSidebarOpenControl } from "./HelpSidebar";
 import { CodeAsFrames } from "./FramesEditing/CodeAsFrames";
-import { makeEditable } from "../model/frames-editing";
+import { makeEditable, makeCommentFrame, makeAssignmentFrame, makeStatementFrame, makeIfFrame, makePrintFrame, makeGlideFrame, makeSayForSecondsFrame } from "../model/frames-editing";
+import Button from "react-bootstrap/Button";
 
 const ReadOnlyOverlay = () => {
   const syncState = useStoreState((state) => state.activeProject.syncState);
@@ -103,6 +104,58 @@ const CodeAceEditor = () => {
   );
 };
 
+export const FrameControls = () => {
+  //const appendFrame = useStoreActions((actions) => actions.framesEditor.appendFrame);
+  
+  const addFrame = useStoreActions((actions) => actions.framesEditor.addFrame);
+
+  const addCommentFrame = () => {
+    const newFrame = makeCommentFrame({commentText:""});
+    addFrame(newFrame);
+  }
+
+  const addAssignmentFrame = () => {
+    const newFrame = makeAssignmentFrame({variableName:"", valueText:""});
+    addFrame(newFrame);
+  }
+
+  const addStatementFrame = () => {
+    const newFrame = makeStatementFrame({statementText:""});
+    addFrame(newFrame);
+  }
+
+  const addIfFrame = () => {
+    const newFrame = makeIfFrame({condition:"", body:[]});
+    addFrame(newFrame);
+  }
+
+  const addPrintFrame = () => {
+    const newFrame = makePrintFrame({printText:""});
+    addFrame(newFrame);
+  }
+
+  const addGlideFrame = () => {
+    const newFrame = makeGlideFrame({Xvalue:"", Yvalue:"", seconds:"1" });
+    addFrame(newFrame);
+  }
+
+  const addSayForSecondsFrame = () => {
+    const newFrame = makeSayForSecondsFrame({text:"", seconds:"1" });
+    addFrame(newFrame);
+  }
+
+  return <div className="frame-controls">
+    <Button className="frame-control-buttons" onClick={addCommentFrame}>Add Comment</Button>
+    <Button className="frame-control-buttons" onClick={addAssignmentFrame}>Add Assignment</Button>
+    <Button className="frame-control-buttons" onClick={addStatementFrame}>Add Statement</Button>
+    <Button className="frame-control-buttons" onClick={addIfFrame}>Add If</Button>
+    <Button className="frame-control-buttons" onClick={addPrintFrame}>Add Print</Button>
+    <Button className="frame-control-buttons" onClick={addGlideFrame}>Add Glide</Button>
+    <Button className="frame-control-buttons" onClick={addSayForSecondsFrame}>Add Say</Button>
+    </div> 
+    
+}
+
 const CodeEditor = () => {
   const codeAsFrames = useStoreState((state) => state.framesEditor);
   const frameActions = useStoreActions((actions) => actions.framesEditor);
@@ -110,7 +163,12 @@ const CodeEditor = () => {
     makeEditable(f, frameActions)
   );
 
-  return <CodeAsFrames frames={editableFrames} />;
+  return (
+  <div className="frame-based-editor">
+    < CodeAsFrames frames={editableFrames} />
+    < FrameControls />
+  </div>
+  );
 };
 
 export default CodeEditor;
