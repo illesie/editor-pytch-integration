@@ -11,7 +11,7 @@ import { PytchAceAutoCompleter } from "../skulpt-connection/code-completion";
 import { failIfNull } from "../utils";
 import { HelpSidebar, HelpSidebarOpenControl } from "./HelpSidebar";
 import { CodeAsFrames } from "./FramesEditing/CodeAsFrames";
-import { makeEditable, makeCommentFrame, makeAssignmentFrame, makeStatementFrame, makeIfFrame, makePrintFrame, makeGlideFrame, makeSayForSecondsFrame } from "../model/frames-editing";
+import { makeEditable, makeCommentFrame, makeAssignmentFrame, makeStatementFrame, makeIfFrame, makePrintFrame, makeGlideFrame, makeSayForSecondsFrame, makeWaitFrame } from "../model/frames-editing";
 import Button from "react-bootstrap/Button";
 
 const ReadOnlyOverlay = () => {
@@ -144,6 +144,11 @@ export const FrameControls = () => {
     addFrame(newFrame);
   }
 
+  const addWaitFrame = () => {
+    const newFrame = makeWaitFrame({seconds:"1" });
+    addFrame(newFrame);
+  }
+
   return <div className="frame-controls">
     <Button className="frame-control-buttons" onClick={addCommentFrame}>Add Comment</Button>
     <Button className="frame-control-buttons" onClick={addAssignmentFrame}>Add Assignment</Button>
@@ -152,6 +157,7 @@ export const FrameControls = () => {
     <Button className="frame-control-buttons" onClick={addPrintFrame}>Add Print</Button>
     <Button className="frame-control-buttons" onClick={addGlideFrame}>Add Glide</Button>
     <Button className="frame-control-buttons" onClick={addSayForSecondsFrame}>Add Say</Button>
+    <Button className="frame-control-buttons" onClick={addWaitFrame}>Add Wait</Button>
     </div> 
     
 }

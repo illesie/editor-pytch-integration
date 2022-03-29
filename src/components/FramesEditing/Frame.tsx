@@ -8,7 +8,8 @@ import { StatementFrame } from "./StatementFrame";
 import { IfFrame } from "./IfFrame";
 import { PrintFrame } from "./PrintFrame";
 import { GlideFrame } from "./GlideFrame";
-import { SayForSecondsFrame } from "./SayForSeconds";
+import { SayForSecondsFrame } from "./SayForSecondsFrame";
+import { WaitFrame } from "./WaitFrame";
 
 const componentFromKind = {
   comment: CommentFrame,
@@ -18,6 +19,7 @@ const componentFromKind = {
   print: PrintFrame,
   glide: GlideFrame,
   sayforseconds: SayForSecondsFrame,
+  wait: WaitFrame,
   // TODO: Add
   // ---
   // all frame types when implemented.

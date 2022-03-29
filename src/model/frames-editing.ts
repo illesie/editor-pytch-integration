@@ -156,6 +156,20 @@ kind: "sayforseconds",
 ...core,
 });
 
+// Wait
+type WaitCore = {
+  seconds: string;
+};
+
+export type WaitFrame = FrameBase<"wait"> & WaitCore;
+
+export const makeWaitFrame = (core: WaitCore): WaitFrame => ({
+id: nextId(),
+kind: "wait",
+...core,
+});
+
+
 // TODO:
 //
 ////////////////////////////////////////////////////////////////////////
@@ -163,7 +177,7 @@ kind: "sayforseconds",
 
 // TODO: Uncomment AssignmentFrame; add other frame types when done.
 
-export type Frame = CommentFrame | AssignmentFrame | StatementFrame | IfFrame | PrintFrame | GlideFrame | SayForSecondsFrame /*| ListAssignmentFrame | IfFrame | ListAssignmentFrame | ForLoopFrame | WhileLoopFrame | ... | */ ;
+export type Frame = CommentFrame | AssignmentFrame | StatementFrame | IfFrame | PrintFrame | GlideFrame | SayForSecondsFrame | WaitFrame /*| ListAssignmentFrame | IfFrame | ListAssignmentFrame | ForLoopFrame | WhileLoopFrame | ... | */ ;
 
 ////////////////////////////////////////////////////////////////////////
 // Editing a frame
@@ -455,6 +469,9 @@ export const PythonCode = (frames:Array<Frame>): string => {
     }
     else if(frame.kind === "glide"){
       py_text = py_text.concat("\nself.glide_to_xy(" + frame.Xvalue + ", " + frame.Yvalue + ", " + frame.seconds + "\n");
+    }
+    else if(frame.kind === "wait"){
+      py_text = py_text.concat("\n pytch.wait_seconds( " + frame.seconds + "\n");
     }
   })
 
