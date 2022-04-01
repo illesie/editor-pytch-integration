@@ -5,6 +5,7 @@ import {
   PrintFrame as PrintFrameT,
   makePrintFrame,
 } from "../../model/frames-editing";
+import {FaCheck} from "react-icons/fa";
 
 export const PrintFrame: React.FC<Editable<PrintFrameT>> = (props) => {
   const [text, setText] = useState(props.frame.printText);
@@ -19,6 +20,9 @@ export const PrintFrame: React.FC<Editable<PrintFrameT>> = (props) => {
 
       return (
         <div>
+          <span onClick={save}>
+            <FaCheck color="indigo" size={50}/>
+          </span>
           {"print( "}
           <Form.Control
             type="text"
@@ -26,7 +30,6 @@ export const PrintFrame: React.FC<Editable<PrintFrameT>> = (props) => {
             onChange={(evt) => setText(evt.target.value)}
           ></Form.Control>
           {" )"}
-          <Button onClick={save}>SAVE</Button>
         </div>
       );
     }

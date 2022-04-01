@@ -6,6 +6,7 @@ import {
   makeIfFrame,
   makeEditable
 } from "../../model/frames-editing";
+import {FaCheck} from "react-icons/fa";
 
 import { Frame } from "./Frame";
 
@@ -34,6 +35,9 @@ export const IfFrame: React.FC<Editable<IfFrameT>> = (props) => {
         editState.save(makeIfFrame({ condition: text, body: []}));
       return (
         <div>
+          <span onClick={save}>
+            <FaCheck color="indigo" size={50}/>
+          </span>
           {"if "}
           <Form.Control
             type="text"
@@ -43,7 +47,6 @@ export const IfFrame: React.FC<Editable<IfFrameT>> = (props) => {
           {":"}
           {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
           <Button>Insert</Button>
-          <Button onClick={save}>SAVE</Button>
         </div>
       );
     }

@@ -5,6 +5,7 @@ import {
   GlideFrame as GlideFrameT,
   makeGlideFrame,
 } from "../../model/frames-editing";
+import {FaCheck} from "react-icons/fa";
 
 // self.glide_to_xy(x, y, seconds)
 
@@ -32,6 +33,9 @@ export const GlideFrame: React.FC<Editable<GlideFrameT>> = (props) => {
 
       return (
         <div>
+          <span onClick={save}>
+            <FaCheck color="indigo" size={50}/>
+          </span>
           {"self.glide_to_xy( "}
           <Form.Control
             type="text"
@@ -51,7 +55,6 @@ export const GlideFrame: React.FC<Editable<GlideFrameT>> = (props) => {
             onChange={(evt) => setSeconds(evt.target.value)}
           ></Form.Control>
           {" )"}
-          <Button onClick={save}>SAVE</Button>
         </div>
       );
     }

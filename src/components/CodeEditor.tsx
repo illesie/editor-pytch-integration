@@ -162,6 +162,23 @@ export const FrameControls = () => {
   return (
     <div className="frame-controls">
       Add Frames
+      <div className="dropdown">
+        <Button className="dropbtn">My Sprite</Button>
+        <div className="dropdown-content">
+          <Button className="frame-control-buttons" onClick={addGlideFrame}>
+            Glide
+          </Button>
+          <Button
+            className="frame-control-buttons"
+            onClick={addSayForSecondsFrame}
+          >
+            Say
+          </Button>
+          <Button className="frame-control-buttons" onClick={addWaitFrame}>
+            Wait
+          </Button>
+        </div>
+      </div>
       <Button className="frame-control-buttons" onClick={addCommentFrame}>
         Comment
       </Button>
@@ -177,20 +194,6 @@ export const FrameControls = () => {
       <Button className="frame-control-buttons" onClick={addIfFrame}>
         If
       </Button>
-      <div className="dropdown">
-        <Button className="frame-control-buttons" style={{backgroundColor:'mediumBlue'}} >My Sprite</Button>
-        <div className="dropdown-content">
-          <Button className="frame-control-buttons" onClick={addGlideFrame}>
-            Glide
-          </Button>
-          <Button className="frame-control-buttons" onClick={addSayForSecondsFrame}>
-            Say
-          </Button>
-          <Button className="frame-control-buttons" onClick={addWaitFrame}>
-            Wait
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

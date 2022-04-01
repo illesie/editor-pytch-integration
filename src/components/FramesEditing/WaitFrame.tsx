@@ -5,6 +5,7 @@ import {
   WaitFrame as WaitFrameT,
   makeWaitFrame,
 } from "../../model/frames-editing";
+import {FaCheck} from "react-icons/fa";
 
 export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
   const [seconds, setSeconds] = useState(props.frame.seconds);
@@ -26,6 +27,9 @@ export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
 
       return (
         <div>
+          <span onClick={save}>
+            <FaCheck color="indigo" size={50}/>
+          </span>
           {"self.pytch.wait_seconds( "}
           <Form.Control
             type="text"
@@ -33,7 +37,6 @@ export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
             onChange={(evt) => setSeconds(evt.target.value)}
           ></Form.Control>
           {" )"}
-          <Button onClick={save}>SAVE</Button>
         </div>
       );
     }

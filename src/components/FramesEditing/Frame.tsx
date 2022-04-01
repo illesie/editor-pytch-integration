@@ -10,6 +10,7 @@ import { PrintFrame } from "./PrintFrame";
 import { GlideFrame } from "./GlideFrame";
 import { SayForSecondsFrame } from "./SayForSecondsFrame";
 import { WaitFrame } from "./WaitFrame";
+import { FaTimes, FaPen } from "react-icons/fa";
 
 const componentFromKind = {
   comment: CommentFrame,
@@ -42,42 +43,52 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
       case "saved":
         return (
           <>
-            <Button className="in-frame-button" onClick={editState.edit}>EDIT</Button>
-            <Button className="in-frame-button" style={{backgroundColor:'red'}} onClick={editState.delete}>X</Button>
+            <span onClick={editState.delete}>
+              <FaTimes color="#e33" size={25} />
+            </span>
+            <span onClick={editState.edit}>
+            <FaPen color="indigo"/>
+            </span>
           </>
         );
       case "being-edited":
         // "SAVE" button is part of concrete frame component.
         return (
-          <>
-            <Button className="in-frame-button" style={{backgroundColor:'red'}} onClick={editState.delete}>X</Button>
-          </>
+            <span onClick={editState.delete}>
+              <FaTimes color="#e33" size={25} />
+            </span>
         );
     }
   })(props.editState);
 
-  switch (props.editState.status){
-  case "saved":
-  return (
-    <>
-    <div className="frame" onDoubleClick={props.editState.edit} >
-      <div className="code-content">
-        <FrameContent {...props} />
-      </div>
-      <div>{buttons}</div>
-    </div>
-    <Button className="index-button" onClick={() => props.editState.selectIndex()}/>
-    </>
-  );
-  case "being-edited":
-    return (
-      <div className="frame">
-        <div className="code-content">
-          <FrameContent {...props} />
+  switch (props.editState.status) {
+    case "saved":
+      return (
+        <>
+          <div className="frame" onDoubleClick={props.editState.edit}>
+            <div>{buttons}</div>
+            <div className="code-content">
+              <FrameContent {...props} />
+            </div>
+          </div>
+          <Button
+            className="index-button"
+            onClick={() => props.editState.selectIndex()}
+          />
+        </>
+      );
+    case "being-edited":
+      return (
+        <div className="frame">
+          <div>{buttons}</div>
+          <div className="code-content">
+            <FrameContent {...props} />
+          </div>
+          <Button
+            className="index-button"
+            onClick={() => props.editState.selectIndex()}
+          />
         </div>
-        <div>{buttons}</div>
-        <Button className="index-button" onClick={() => props.editState.selectIndex()}/>
-      </div>
-    );
-  } 
+      );
+  }
 };

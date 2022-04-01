@@ -5,6 +5,7 @@ import {
   AssignmentFrame as AssignmentFrameT,
   makeAssignmentFrame,
 } from "../../model/frames-editing";
+import {FaCheck} from "react-icons/fa";
 
 export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (props) => {
   const [text, setText] = useState(props.frame.variableName);
@@ -20,6 +21,9 @@ export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (props) => 
         editState.save(makeAssignmentFrame({ variableName: text, valueText: value }));
       return (
         <div>
+          <span onClick={save}>
+            <FaCheck color="indigo" size={50}/>
+          </span>
           <Form.Control
             type="text"
             value={text}
@@ -31,7 +35,6 @@ export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (props) => 
             value={value}
             onChange={(evt) => setValue(evt.target.value)}
           ></Form.Control>
-          <Button onClick={save}>SAVE</Button>
         </div>
       );
     }

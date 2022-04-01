@@ -5,6 +5,7 @@ import {
   SayForSecondsFrame as SayForSecondsFrameT,
   makeSayForSecondsFrame,
 } from "../../model/frames-editing";
+import {FaCheck} from "react-icons/fa";
 
 // self.say_for_seconds(text, seconds)
 export const SayForSecondsFrame: React.FC<Editable<SayForSecondsFrameT>> = (props) => {
@@ -29,6 +30,9 @@ export const SayForSecondsFrame: React.FC<Editable<SayForSecondsFrameT>> = (prop
 
       return (
         <div>
+          <span onClick={save}>
+            <FaCheck color="indigo" size={50}/>
+          </span>
           {"self.say_for_seconds( "}
           <Form.Control
             type="text"
@@ -42,7 +46,6 @@ export const SayForSecondsFrame: React.FC<Editable<SayForSecondsFrameT>> = (prop
             onChange={(evt) => setSeconds(evt.target.value)}
           ></Form.Control>
           {" )"}
-          <Button onClick={save}>SAVE</Button>
         </div>
       );
     }
