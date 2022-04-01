@@ -201,6 +201,7 @@ export type EditState =
       // If the frame is currently being edited, then we can do the
       // following things to it:
       save: (newFrame: Frame) => void;
+      modify: (newFrame: Frame)=> void;
       // TODO: cancel: () => void;
       delete: () => void;
       selectIndex: () => void;
@@ -242,6 +243,10 @@ export interface IFramesEditor {
   /** Replace the frame within state.frames having the given ID with the
    * given replacement frame, noting its status as "saved". */
   saveFrame: Action<IFramesEditor, ReplaceFrameDescriptor>;
+
+  /** Replace the frame within state.frames having the given ID with the
+   * given replacement frame while its status remains "being-edited". */
+  modifyFrame: Action<IFramesEditor, ReplaceFrameDescriptor>;
 
   /** Remove the frame within state.frames with ID matching that of
    * passed-in frame. */
@@ -315,6 +320,13 @@ export const framesEditor: IFramesEditor = {
     },
     {
       id: 1003,
+      kind: "statement",
+      statementText: 'print("hello")',
+      editStatus: "saved",
+    },
+    /*
+    {
+      id: 1003,
       kind: "if",
       condition: "0 == 42",
       editStatus: "saved",
@@ -333,6 +345,7 @@ export const framesEditor: IFramesEditor = {
         },
       ],
     },
+    */
   ],
 
   index:0,
@@ -351,6 +364,17 @@ export const framesEditor: IFramesEditor = {
     state.frames[frameIndex] = {
       ...replaceDescriptor.newFrame,
       editStatus: "saved",
+    };
+  }),
+
+  modifyFrame: action((state, replaceDescriptor) => {
+    const frameIndex = frameIndexByIdOrFail(
+      state.frames,
+      replaceDescriptor.idToReplace
+    );
+    state.frames[frameIndex] = {
+      ...replaceDescriptor.newFrame,
+      editStatus: "being-edited",
     };
   }),
 
@@ -439,6 +463,11 @@ export const makeEditable = (
               idToReplace: bareFrame.id,
               newFrame: replacementFrame,
             }),
+          modify: (replacementFrame) =>
+          actions.modifyFrame({
+            idToReplace: bareFrame.id,
+            newFrame: replacementFrame,
+          }),
           delete: () => actions.deleteFrame(bareFrame),
           selectIndex: () => actions.onSelectIndex(bareFrame),
         },

@@ -16,13 +16,16 @@ export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
     case "being-edited": {
       const save = () =>
         editState.save(makeStatementFrame({ statementText: text }));
-
+      const onTextChange = (value:string) => {
+        setText(value);
+        editState.modify(makeStatementFrame({ statementText: value }));
+      }
       return (
         <div>
           <Form.Control
             type="text"
             value={text}
-            onChange={(evt) => setText(evt.target.value)}
+            onChange={(evt) => onTextChange(evt.target.value)}
           ></Form.Control>
           <Button onClick={save}>SAVE</Button>
         </div>
