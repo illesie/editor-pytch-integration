@@ -23,6 +23,7 @@ import {
   makeWaitFrame,
 } from "../model/frames-editing";
 import Button from "react-bootstrap/Button";
+import {FaCar, FaHashtag, FaEquals, FaPlusSquare, FaPrint, FaQuestion} from "react-icons/fa"
 
 const ReadOnlyOverlay = () => {
   const syncState = useStoreState((state) => state.activeProject.syncState);
@@ -163,7 +164,7 @@ export const FrameControls = () => {
     <div className="frame-controls">
       Add Frames
       <div className="dropdown">
-        <Button className="dropbtn">My Sprite</Button>
+        <Button className="dropbtn"> <div className="button-icon"> <FaCar size={20}/> </div> My Sprite</Button>
         <div className="dropdown-content">
           <Button className="frame-control-buttons" onClick={addGlideFrame}>
             Glide
@@ -180,18 +181,23 @@ export const FrameControls = () => {
         </div>
       </div>
       <Button className="frame-control-buttons" onClick={addCommentFrame}>
+        <div className="button-icon"> <FaHashtag color="white" size={12}/></div>
         Comment
       </Button>
       <Button className="frame-control-buttons" onClick={addAssignmentFrame}>
+        <div className="button-icon"> <FaEquals color="white" size={12}/></div>
         Assignment
       </Button>
       <Button className="frame-control-buttons" onClick={addStatementFrame}>
+        <div className="button-icon"> <FaPlusSquare color="white" size={12}/></div>
         Statement
       </Button>
       <Button className="frame-control-buttons" onClick={addPrintFrame}>
+        <div className="button-icon"> <FaPrint color="white" size={12}/></div>
         Print
       </Button>
       <Button className="frame-control-buttons" onClick={addIfFrame}>
+        <div className="button-icon"> <FaQuestion color="white" size={12}/></div>
         If
       </Button>
     </div>

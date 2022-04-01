@@ -673,6 +673,14 @@ div.spacer-instead-of-resizer {
   }
 }
 
+.button-icon{
+  background-color: currentColor;
+  border-radius: 0.1em;
+  margin-right:0.5em;
+  padding: 1px;
+  width:1.75em;
+}
+
 .frame-controls {
   display: block;
   background-color: #9999CC;
@@ -695,6 +703,11 @@ div.spacer-instead-of-resizer {
       background-color: #6f42c1;
       color: white;
     }
+
+  }
+  .frame-control-buttons:hover .button-icon {
+    background-color: #6f42c1;
+    color: white;
   }
   .frame-control-buttons:hover:active{
     background-color: indigo;
@@ -755,6 +768,14 @@ div.spacer-instead-of-resizer {
 
   /* Change the background color of the dropdown button when the dropdown content is shown */
   .dropdown:hover .dropbtn {
+    background-color: #6f42c1;
+    color: white;
+  }
+  .dropdown .button-icon{
+    background-color: white;
+    color: #6f42c1;
+  }
+  .dropdown:hover .button-icon {
     background-color: #6f42c1;
     color: white;
   }
