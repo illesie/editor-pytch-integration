@@ -316,7 +316,7 @@ export const framesEditor: IFramesEditor = {
     {
       id: 1003,
       kind: "if",
-      condition: "x == 42",
+      condition: "0 == 42",
       editStatus: "saved",
       body: [
         {
@@ -462,7 +462,7 @@ export const PythonCode = (frames:Array<Frame>): string => {
       py_text = py_text.concat("\n" + frame.statementText);
     }
     else if(frame.kind === "if"){
-      py_text = py_text.concat("\n" + frame.condition + "\n");
+      py_text = py_text.concat("\nif" + frame.condition + ":\n"+ 'print(" In the IF")');
     }
     else if(frame.kind === "print"){
       py_text = py_text.concat("\nprint(" + frame.printText + ")\n");

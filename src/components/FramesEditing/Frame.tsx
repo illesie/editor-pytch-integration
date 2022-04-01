@@ -59,13 +59,15 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
   switch (props.editState.status){
   case "saved":
   return (
+    <>
     <div className="frame" onDoubleClick={props.editState.edit} >
       <div className="code-content">
         <FrameContent {...props} />
       </div>
       <div>{buttons}</div>
-      <Button className="index-button" onClick={() => props.editState.selectIndex()}/>
     </div>
+    <Button className="index-button" onClick={() => props.editState.selectIndex()}/>
+    </>
   );
   case "being-edited":
     return (
