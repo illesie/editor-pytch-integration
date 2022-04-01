@@ -242,7 +242,7 @@ export interface IFramesEditor {
 
   /** Replace the frame within state.frames having the given ID with the
    * given replacement frame, noting its status as "saved". */
-  saveFrame: Action<IFramesEditor, ReplaceFrameDescriptor>;
+  saveFrame: Action<IFramesEditor>;
 
   /** Replace the frame within state.frames having the given ID with the
    * given replacement frame while its status remains "being-edited". */
@@ -352,10 +352,14 @@ export const framesEditor: IFramesEditor = {
 
   editFrame: action((state, frame) => {
     const frameIndex = frameIndexByIdOrFail(state.frames, frame.id);
-    state.frames.map( frame => {frame.editStatus = "saved"});
+    state.frames.forEach( frame => {frame.editStatus = "saved"});
     state.frames[frameIndex].editStatus = "being-edited";
   }),
 
+  saveFrame: action((state) => {
+    state.frames.forEach( frame => {frame.editStatus = "saved"});
+  }),
+/*
   saveFrame: action((state, replaceDescriptor) => {
     const frameIndex = frameIndexByIdOrFail(
       state.frames,
@@ -366,14 +370,16 @@ export const framesEditor: IFramesEditor = {
       editStatus: "saved",
     };
   }),
-
+*/
   modifyFrame: action((state, replaceDescriptor) => {
     const frameIndex = frameIndexByIdOrFail(
       state.frames,
       replaceDescriptor.idToReplace
     );
+    const originalId = state.frames[frameIndex].id;
     state.frames[frameIndex] = {
       ...replaceDescriptor.newFrame,
+      id: originalId,
       editStatus: "being-edited",
     };
   }),
@@ -458,11 +464,7 @@ export const makeEditable = (
         frame: bareFrame,
         editState: {
           status: "being-edited",
-          save: (replacementFrame) =>
-            actions.saveFrame({
-              idToReplace: bareFrame.id,
-              newFrame: replacementFrame,
-            }),
+          save: () => actions.saveFrame(),
           modify: (replacementFrame) =>
           actions.modifyFrame({
             idToReplace: bareFrame.id,

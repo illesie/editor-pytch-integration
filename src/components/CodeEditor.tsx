@@ -181,23 +181,23 @@ export const FrameControls = () => {
         </div>
       </div>
       <Button className="frame-control-buttons" onClick={addCommentFrame}>
-        <div className="button-icon"> <FaHashtag color="white" size={12}/></div>
+        <div className="button-icon"> <FaHashtag  size={15}/></div>
         Comment
       </Button>
       <Button className="frame-control-buttons" onClick={addAssignmentFrame}>
-        <div className="button-icon"> <FaEquals color="white" size={12}/></div>
+        <div className="button-icon"> <FaEquals size={15}/></div>
         Assignment
       </Button>
       <Button className="frame-control-buttons" onClick={addStatementFrame}>
-        <div className="button-icon"> <FaPlusSquare color="white" size={12}/></div>
+        <div className="button-icon"> <FaPlusSquare size={15}/></div>
         Statement
       </Button>
       <Button className="frame-control-buttons" onClick={addPrintFrame}>
-        <div className="button-icon"> <FaPrint color="white" size={12}/></div>
+        <div className="button-icon"> <FaPrint size={15}/></div>
         Print
       </Button>
       <Button className="frame-control-buttons" onClick={addIfFrame}>
-        <div className="button-icon"> <FaQuestion color="white" size={12}/></div>
+        <div className="button-icon"> <FaQuestion size={15}/></div>
         If
       </Button>
     </div>

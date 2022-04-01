@@ -8,7 +8,6 @@ import {
 import {FaCheck} from "react-icons/fa"
 
 export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
-  const [text, setText] = useState(props.frame.statementText);
 
   const editState = props.editState;
   switch (editState.status) {
@@ -16,10 +15,9 @@ export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
       return <div> {props.frame.statementText}</div>;
     case "being-edited": {
       const save = () =>
-        editState.save(makeStatementFrame({ statementText: text }));
+      editState.save(makeStatementFrame({ statementText: props.frame.statementText }));
 
       const onTextChange = (value:string) => {
-        setText(value);
         editState.modify(makeStatementFrame({ statementText: value }));
       }
       
@@ -30,7 +28,7 @@ export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
           </span>
           <Form.Control
             type="text"
-            value={text}
+            value={props.frame.statementText}
             onChange={(evt) => onTextChange(evt.target.value)}
           ></Form.Control>
         </div>

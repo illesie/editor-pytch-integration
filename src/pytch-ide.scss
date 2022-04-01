@@ -674,12 +674,13 @@ div.spacer-instead-of-resizer {
 }
 
 .button-icon{
-  background-color: currentColor;
+  background-color: white;
   border-radius: 0.1em;
   margin-right:0.5em;
-  padding: 1px;
-  width:1.75em;
+  width:1.5em;
+  height:1.5em;
 }
+
 
 .frame-controls {
   display: block;
