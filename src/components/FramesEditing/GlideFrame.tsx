@@ -5,14 +5,8 @@ import {
   GlideFrame as GlideFrameT,
   makeGlideFrame,
 } from "../../model/frames-editing";
-import {FaCheck} from "react-icons/fa";
-
-// self.glide_to_xy(x, y, seconds)
 
 export const GlideFrame: React.FC<Editable<GlideFrameT>> = (props) => {
-  const [Xvalue, setX] = useState(props.frame.Xvalue);
-  const [Yvalue, setY] = useState(props.frame.Yvalue);
-  const [seconds, setSeconds] = useState(props.frame.seconds);
 
   const editState = props.editState;
   switch (editState.status) {
@@ -26,33 +20,38 @@ export const GlideFrame: React.FC<Editable<GlideFrameT>> = (props) => {
         </div>
       );
     case "being-edited": {
-      const save = () =>
-        editState.save(
-          makeGlideFrame({ Xvalue: Xvalue, Yvalue: Yvalue, seconds: seconds })
-        );
+
+      const onXChange = (value:string) => {
+        editState.modify(makeGlideFrame({ Xvalue: value, Yvalue: props.frame.Yvalue, seconds: props.frame.seconds }));
+      }
+
+      const onYChange = (value:string) => {
+        editState.modify(makeGlideFrame({ Xvalue: props.frame.Xvalue, Yvalue: value, seconds: props.frame.seconds }));
+      }
+
+      const onSecChange = (value:string) => {
+        editState.modify(makeGlideFrame({ Xvalue: props.frame.Xvalue, Yvalue: props.frame.Yvalue, seconds: value }));
+      }
 
       return (
         <div>
-          <span onClick={save}>
-            <FaCheck color="indigo" size={50}/>
-          </span>
           {"self.glide_to_xy( "}
           <Form.Control
             type="text"
-            value={Xvalue}
-            onChange={(evt) => setX(evt.target.value)}
+            value={props.frame.Xvalue}
+            onChange={(evt) => onXChange(evt.target.value)}
           ></Form.Control>
           {", "}
           <Form.Control
             type="text"
-            value={Yvalue}
-            onChange={(evt) => setY(evt.target.value)}
+            value={props.frame.Yvalue}
+            onChange={(evt) => onYChange(evt.target.value)}
           ></Form.Control>
           {", "}
           <Form.Control
             type="text"
-            value={seconds}
-            onChange={(evt) => setSeconds(evt.target.value)}
+            value={props.frame.seconds}
+            onChange={(evt) => onSecChange(evt.target.value)}
           ></Form.Control>
           {" )"}
         </div>

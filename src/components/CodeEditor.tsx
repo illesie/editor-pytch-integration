@@ -23,7 +23,7 @@ import {
   makeWaitFrame,
 } from "../model/frames-editing";
 import Button from "react-bootstrap/Button";
-import {FaCar, FaHashtag, FaEquals, FaPlusSquare, FaPrint, FaQuestion} from "react-icons/fa"
+import {FaCar, FaHashtag, FaEquals, FaPlusSquare, FaPenFancy, FaQuestion} from "react-icons/fa"
 
 const ReadOnlyOverlay = () => {
   const syncState = useStoreState((state) => state.activeProject.syncState);
@@ -193,7 +193,7 @@ export const FrameControls = () => {
         Statement
       </Button>
       <Button className="frame-control-buttons" onClick={addPrintFrame}>
-        <div className="button-icon"> <FaPrint size={15}/></div>
+        <div className="button-icon"> <FaPenFancy size={15}/></div>
         Print
       </Button>
       <Button className="frame-control-buttons" onClick={addIfFrame}>

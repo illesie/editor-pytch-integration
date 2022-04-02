@@ -4,24 +4,18 @@ import {
   Editable,
   IfFrame as IfFrameT,
   makeIfFrame,
-  makeEditable
+  makeEditable,
 } from "../../model/frames-editing";
-import {FaCheck} from "react-icons/fa";
-
 import { Frame } from "./Frame";
-
 import { useStoreActions } from "../../store"
 
 export const IfFrame: React.FC<Editable<IfFrameT>> = (props) => {
-  const [text, setText] = useState(props.frame.condition);
   const editState = props.editState;
   
   const frameActions = useStoreActions((actions) => actions.framesEditor);
   const editableFrames = props.frame.body.map((f) =>
     makeEditable(f, frameActions)
   );
-
-//< CodeAsFrames frames={editableFrames} />
 
   switch (editState.status) {
     case "saved":
@@ -31,18 +25,16 @@ export const IfFrame: React.FC<Editable<IfFrameT>> = (props) => {
       </div>
       </div>;
     case "being-edited": {
-      const save = () =>
-        editState.save(makeIfFrame({ condition: text, body: []}));
+      const onTextChange = (value:string) => {
+        editState.modify(makeIfFrame({ condition: value, body:props.frame.body }));
+      }
       return (
         <div>
-          <span onClick={save}>
-            <FaCheck color="indigo" size={50}/>
-          </span>
           {"if "}
           <Form.Control
             type="text"
-            value={text}
-            onChange={(evt) => setText(evt.target.value)}
+            value={props.frame.condition}
+            onChange={(evt) => onTextChange(evt.target.value)}
           ></Form.Control>
           {":"}
           {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}

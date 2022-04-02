@@ -200,9 +200,8 @@ export type EditState =
       status: "being-edited";
       // If the frame is currently being edited, then we can do the
       // following things to it:
-      save: (newFrame: Frame) => void;
+      save: () => void;
       modify: (newFrame: Frame)=> void;
-      // TODO: cancel: () => void;
       delete: () => void;
       selectIndex: () => void;
     }
@@ -252,9 +251,6 @@ export interface IFramesEditor {
    * passed-in frame. */
   deleteFrame: Action<IFramesEditor, Frame>;
 
-  //addFrame works now, so this becomes unnecessary
-  appendFrame: Action<IFramesEditor, Frame>;
-
   onSelectIndex: Action<IFramesEditor, Frame>;
 
   addFrame: Action<IFramesEditor, Frame>;
@@ -291,6 +287,7 @@ const frameIndexByIdOrFail = (
   frames: Array<PreEditableFrame>,
   targetId: number
 ) => {
+
   const frameIndex = frames.findIndex((f) => f.id === targetId);
   if (frameIndex === -1)
     throw new Error(`could not find frame with id ${targetId}`);
@@ -320,13 +317,6 @@ export const framesEditor: IFramesEditor = {
     },
     {
       id: 1003,
-      kind: "statement",
-      statementText: 'print("hello")',
-      editStatus: "saved",
-    },
-    /*
-    {
-      id: 1003,
       kind: "if",
       condition: "0 == 42",
       editStatus: "saved",
@@ -345,7 +335,7 @@ export const framesEditor: IFramesEditor = {
         },
       ],
     },
-    */
+    
   ],
 
   index:0,
@@ -359,18 +349,7 @@ export const framesEditor: IFramesEditor = {
   saveFrame: action((state) => {
     state.frames.forEach( frame => {frame.editStatus = "saved"});
   }),
-/*
-  saveFrame: action((state, replaceDescriptor) => {
-    const frameIndex = frameIndexByIdOrFail(
-      state.frames,
-      replaceDescriptor.idToReplace
-    );
-    state.frames[frameIndex] = {
-      ...replaceDescriptor.newFrame,
-      editStatus: "saved",
-    };
-  }),
-*/
+
   modifyFrame: action((state, replaceDescriptor) => {
     const frameIndex = frameIndexByIdOrFail(
       state.frames,
@@ -387,25 +366,23 @@ export const framesEditor: IFramesEditor = {
   deleteFrame: action((state, frame) => {
     // Find the index and filter by that, to ensure that we do indeed
     // find the to-be-deleted frame.
+
     const frameIndex = frameIndexByIdOrFail(state.frames, frame.id);
     state.frames = state.frames.filter((_frame, idx) => idx !== frameIndex);
   }),
 
 
-  appendFrame: action((state, newFrame) =>{
-    const newEditableFrame:PreEditableFrame = {
-      ...newFrame,
-      editStatus: "being-edited"
-    }
-    state.frames = [...state.frames, newEditableFrame];
-  }),
-
   onSelectIndex: action((state, current_frame) =>{
     console.log(current_frame.id)
   
     const current_index = state.frames.findIndex(frame => frame.id === current_frame.id);
+    console.log("index: " +current_index);
+    if(current_index == -1){
+      console.log("nested!");
+    }
+    
+    
     state.index = current_index;
-
   }),
 
   addFrame: action((state, newFrame) =>{
@@ -417,6 +394,8 @@ export const framesEditor: IFramesEditor = {
     //newFrames.map(frame => frame.editStatus = "saved");
     newFrames.splice(state.index+1, 0, newEditableFrame);
     //state.frames = [...state.frames, newEditableFrame];
+    //console.log(state.index+1);
+
     state.frames = newFrames.slice();
 
   }),
@@ -508,9 +487,3 @@ export const PythonCode = (frames:Array<Frame>): string => {
 
   return py_text;
 }
-
-/*
-function addFrame(arg0: (state: import("easy-peasy").StateMapper<import("Object/Pick")._Pick<IFramesEditor, "frames">, "1">, newFrame: Frame) => void, addFrame: any, arg2: Action<{}, any>): Action<IFramesEditor, Frame> {
-  throw new Error("Function not implemented.");
-}
-*/

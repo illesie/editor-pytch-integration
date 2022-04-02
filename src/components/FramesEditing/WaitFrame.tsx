@@ -5,10 +5,8 @@ import {
   WaitFrame as WaitFrameT,
   makeWaitFrame,
 } from "../../model/frames-editing";
-import {FaCheck} from "react-icons/fa";
 
 export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
-  const [seconds, setSeconds] = useState(props.frame.seconds);
 
   const editState = props.editState;
   switch (editState.status) {
@@ -20,21 +18,18 @@ export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
         </div>
       );
     case "being-edited": {
-      const save = () =>
-        editState.save(
-          makeWaitFrame({ seconds: seconds })
-        );
+
+        const onSecChange = (value:string) => {
+          editState.modify(makeWaitFrame({ seconds: value }));
+        }
 
       return (
         <div>
-          <span onClick={save}>
-            <FaCheck color="indigo" size={50}/>
-          </span>
           {"self.pytch.wait_seconds( "}
           <Form.Control
             type="text"
-            value={seconds}
-            onChange={(evt) => setSeconds(evt.target.value)}
+            value={props.frame.seconds}
+            onChange={(evt) => onSecChange(evt.target.value)}
           ></Form.Control>
           {" )"}
         </div>

@@ -5,11 +5,8 @@ import {
   AssignmentFrame as AssignmentFrameT,
   makeAssignmentFrame,
 } from "../../model/frames-editing";
-import {FaCheck} from "react-icons/fa";
 
 export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (props) => {
-  const [text, setText] = useState(props.frame.variableName);
-  const [value, setValue] = useState(props.frame.valueText);
 
   const editState = props.editState;
 
@@ -17,23 +14,27 @@ export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (props) => 
     case "saved":
       return <div> {props.frame.variableName} {" = "} {props.frame.valueText}</div>;
     case "being-edited": {
-      const save = () =>
-        editState.save(makeAssignmentFrame({ variableName: text, valueText: value }));
+
+      const onTextChange = (value:string) => {
+        editState.modify(makeAssignmentFrame({ variableName: value, valueText:props.frame.valueText }));
+      }
+
+      const onValueTextChange = (value:string) => {
+        editState.modify(makeAssignmentFrame({ variableName:props.frame.variableName, valueText: value }));
+      }
+
       return (
         <div>
-          <span onClick={save}>
-            <FaCheck color="indigo" size={50}/>
-          </span>
           <Form.Control
             type="text"
-            value={text}
-            onChange={(evt) => setText(evt.target.value)}
+            value={props.frame.variableName}
+            onChange={(evt) => onTextChange(evt.target.value)}
           ></Form.Control>
           {" = "}
           <Form.Control
             type="text"
-            value={value}
-            onChange={(evt) => setValue(evt.target.value)}
+            value={props.frame.valueText}
+            onChange={(evt) => onValueTextChange(evt.target.value)}
           ></Form.Control>
         </div>
       );

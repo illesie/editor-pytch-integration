@@ -10,7 +10,7 @@ import { PrintFrame } from "./PrintFrame";
 import { GlideFrame } from "./GlideFrame";
 import { SayForSecondsFrame } from "./SayForSecondsFrame";
 import { WaitFrame } from "./WaitFrame";
-import { FaTimes, FaPen } from "react-icons/fa";
+import { FaTimes, FaPen, FaCheck } from "react-icons/fa";
 
 const componentFromKind = {
   comment: CommentFrame,
@@ -47,16 +47,20 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
               <FaTimes color="#e33" size={25} />
             </span>
             <span onClick={editState.edit}>
-            <FaPen color="indigo"/>
+              <FaPen color="indigo" />
             </span>
           </>
         );
       case "being-edited":
-        // "SAVE" button is part of concrete frame component.
         return (
+          <>
             <span onClick={editState.delete}>
               <FaTimes color="#e33" size={25} />
             </span>
+            <span onClick={editState.save}>
+              <FaCheck color="indigo" size={50} />
+            </span>
+          </>
         );
     }
   })(props.editState);

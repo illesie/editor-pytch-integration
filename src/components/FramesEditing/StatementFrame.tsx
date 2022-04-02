@@ -5,7 +5,6 @@ import {
   StatementFrame as StatementFrameT,
   makeStatementFrame,
 } from "../../model/frames-editing";
-import {FaCheck} from "react-icons/fa"
 
 export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
 
@@ -14,18 +13,13 @@ export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
     case "saved":
       return <div> {props.frame.statementText}</div>;
     case "being-edited": {
-      const save = () =>
-      editState.save(makeStatementFrame({ statementText: props.frame.statementText }));
-
+      
       const onTextChange = (value:string) => {
         editState.modify(makeStatementFrame({ statementText: value }));
       }
       
       return (
         <div>
-          <span onClick={save}>
-            <FaCheck color="indigo" size={50}/>
-          </span>
           <Form.Control
             type="text"
             value={props.frame.statementText}
