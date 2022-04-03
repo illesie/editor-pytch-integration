@@ -1,4 +1,6 @@
 import { Action, action, Actions } from "easy-peasy";
+import { forEach } from "jszip";
+import { IndexKind } from "typescript";
 import { assertNever } from "../utils";
 
 ////////////////////////////////////////////////////////////////////////
@@ -56,7 +58,6 @@ export const makePrintFrame = (core: PrintCore): PrintFrame => ({
   ...core,
 });
 
-
 // Assignment
 type AssignmentCore = {
   variableName: string;
@@ -73,58 +74,60 @@ export const makeAssignmentFrame = (core: AssignmentCore): AssignmentFrame => ({
 
 // List
 type ListAssignmentCore = {
-    variableName: string;
-    valueText: Array<string>;
-  };
-  
+  variableName: string;
+  valueText: Array<string>;
+};
+
 export type ListAssignmentFrame = FrameBase<"list"> & ListAssignmentCore;
 
-export const makeListAssignmentFrame = (core: ListAssignmentCore): ListAssignmentFrame => ({
-id: nextId(),
-kind: "list",
-...core,
+export const makeListAssignmentFrame = (
+  core: ListAssignmentCore
+): ListAssignmentFrame => ({
+  id: nextId(),
+  kind: "list",
+  ...core,
 });
 
 // If
 type IfCore = {
-    condition: string;
-    body: Array<PreEditableFrame>;
-  };
-  
+  condition: string;
+  body: Array<PreEditableFrame>;
+};
+
 export type IfFrame = FrameBase<"if"> & IfCore;
 
 export const makeIfFrame = (core: IfCore): IfFrame => ({
-id: nextId(),
-kind: "if",
-...core,
+  id: nextId(),
+  kind: "if",
+  ...core,
 });
 
 // While Loop
 type WhileLoopCore = {
-    condition: string;
-    //value: [];
-  };
-  
+  condition: string;
+  //value: [];
+};
+
 export type WhileLoopFrame = FrameBase<"while"> & WhileLoopCore;
 
 export const makeWhileLooptFrame = (core: WhileLoopCore): WhileLoopFrame => ({
-id: nextId(),
-kind: "while",
-...core,
+  id: nextId(),
+  kind: "while",
+  ...core,
 });
 
 // For Loop
 type ForLoopCore = {
-    condition: string;
-    // value
-  };
-  
+  condition: string;
+  // value
+};
+
 export type ForLoopFrame = FrameBase<"for"> & ForLoopCore;
 
 export const makeForLoopFrame = (core: ForLoopCore): ForLoopFrame => ({
-id: nextId(),
-kind: "for",
-...core,
+  id: nextId(),
+  kind: "for",
+  ...core,
 });
 
 // Glide
@@ -137,9 +140,9 @@ type GlideCore = {
 export type GlideFrame = FrameBase<"glide"> & GlideCore;
 
 export const makeGlideFrame = (core: GlideCore): GlideFrame => ({
-id: nextId(),
-kind: "glide",
-...core,
+  id: nextId(),
+  kind: "glide",
+  ...core,
 });
 
 // Say for Seconds
@@ -150,10 +153,12 @@ type SayForSecondsCore = {
 
 export type SayForSecondsFrame = FrameBase<"sayforseconds"> & SayForSecondsCore;
 
-export const makeSayForSecondsFrame = (core: SayForSecondsCore): SayForSecondsFrame => ({
-id: nextId(),
-kind: "sayforseconds",
-...core,
+export const makeSayForSecondsFrame = (
+  core: SayForSecondsCore
+): SayForSecondsFrame => ({
+  id: nextId(),
+  kind: "sayforseconds",
+  ...core,
 });
 
 // Wait
@@ -164,11 +169,10 @@ type WaitCore = {
 export type WaitFrame = FrameBase<"wait"> & WaitCore;
 
 export const makeWaitFrame = (core: WaitCore): WaitFrame => ({
-id: nextId(),
-kind: "wait",
-...core,
+  id: nextId(),
+  kind: "wait",
+  ...core,
 });
-
 
 // TODO:
 //
@@ -177,7 +181,15 @@ kind: "wait",
 
 // TODO: Uncomment AssignmentFrame; add other frame types when done.
 
-export type Frame = CommentFrame | AssignmentFrame | StatementFrame | IfFrame | PrintFrame | GlideFrame | SayForSecondsFrame | WaitFrame /*| ListAssignmentFrame | IfFrame | ListAssignmentFrame | ForLoopFrame | WhileLoopFrame | ... | */ ;
+export type Frame =
+  | CommentFrame
+  | AssignmentFrame
+  | StatementFrame
+  | IfFrame
+  | PrintFrame
+  | GlideFrame
+  | SayForSecondsFrame
+  | WaitFrame /*| ListAssignmentFrame | IfFrame | ListAssignmentFrame | ForLoopFrame | WhileLoopFrame | ... | */;
 
 ////////////////////////////////////////////////////////////////////////
 // Editing a frame
@@ -195,13 +207,14 @@ export type Frame = CommentFrame | AssignmentFrame | StatementFrame | IfFrame | 
 // This type will mostly be used further below (in makeEditable), but I
 // define it here so I don't have to repeat myself about the valid
 // values for the "status" property.
+
 export type EditState =
   | {
       status: "being-edited";
       // If the frame is currently being edited, then we can do the
       // following things to it:
       save: () => void;
-      modify: (newFrame: Frame)=> void;
+      modify: (newFrame: Frame) => void;
       delete: () => void;
       selectIndex: () => void;
     }
@@ -233,7 +246,7 @@ type ReplaceFrameDescriptor = {
 export interface IFramesEditor {
   frames: Array<PreEditableFrame>;
 
-  index: number;
+  index_path: Array<number>;
 
   /** Set the frame within state.frames with ID matching that of the
    * passed-in frame to "being-edited" mode. */
@@ -287,11 +300,37 @@ const frameIndexByIdOrFail = (
   frames: Array<PreEditableFrame>,
   targetId: number
 ) => {
-
   const frameIndex = frames.findIndex((f) => f.id === targetId);
-  if (frameIndex === -1)
-    throw new Error(`could not find frame with id ${targetId}`);
+  //if (frameIndex === -1)
+  //  throw new Error(`could not find frame with id ${targetId}`);
   return frameIndex;
+};
+
+
+const hasPath = (
+  path: Array<number>,
+  frame: PreEditableFrame,
+  targetId: number
+) => {
+  if(!frame){
+    return false;
+  }
+
+  path.push(frame.id);
+  if(frame.id === targetId){
+    return true;
+  }
+  else{
+  if(frame.kind == "if"){
+
+    for (var j = 0; j < frame.body.length; j++){
+      if (hasPath(path, frame.body[j], targetId)) {
+        return true;
+      }
+    }
+  }
+  path.pop();
+  return false;}
 };
 
 // Value of the model slice when the app starts up.
@@ -323,9 +362,17 @@ export const framesEditor: IFramesEditor = {
       body: [
         {
           id: 1010,
-          kind: "comment",
-          commentText: "Hello again world!",
+          kind: "if",
+          condition: "0 == 42",
           editStatus: "saved",
+          body: [
+            {
+              id: 1100,
+              kind: "comment",
+              commentText: "Hello again world!",
+              editStatus: "saved",
+            },
+          ],
         },
         {
           id: 1011,
@@ -335,19 +382,36 @@ export const framesEditor: IFramesEditor = {
         },
       ],
     },
-    
+    {
+      id: 1004,
+      kind: "if",
+      condition: "0 == 42",
+      editStatus: "saved",
+      body: [
+        {
+          id: 1400,
+          kind: "comment",
+          commentText: "Hello again world!",
+          editStatus: "saved",
+        },
+      ],
+    },
   ],
 
-  index:0,
+  index_path: [0],
 
   editFrame: action((state, frame) => {
     const frameIndex = frameIndexByIdOrFail(state.frames, frame.id);
-    state.frames.forEach( frame => {frame.editStatus = "saved"});
+    state.frames.forEach((frame) => {
+      frame.editStatus = "saved";
+    });
     state.frames[frameIndex].editStatus = "being-edited";
   }),
 
   saveFrame: action((state) => {
-    state.frames.forEach( frame => {frame.editStatus = "saved"});
+    state.frames.forEach((frame) => {
+      frame.editStatus = "saved";
+    });
   }),
 
   modifyFrame: action((state, replaceDescriptor) => {
@@ -371,35 +435,53 @@ export const framesEditor: IFramesEditor = {
     state.frames = state.frames.filter((_frame, idx) => idx !== frameIndex);
   }),
 
-
-  onSelectIndex: action((state, current_frame) =>{
-    console.log(current_frame.id)
-  
-    const current_index = state.frames.findIndex(frame => frame.id === current_frame.id);
-    console.log("index: " +current_index);
-    if(current_index == -1){
-      console.log("nested!");
-    }
+  onSelectIndex: action((state, current_frame) => {
+    state.index_path = [];
+    // temporary root for the frames
+    const rootFrame: PreEditableFrame = {
+      id: 999,
+      kind: "if",
+      editStatus: "saved",
+      condition: '',
+      body: state.frames,
+    };
     
-    
-    state.index = current_index;
+    const found = hasPath(state.index_path, rootFrame, current_frame.id);
+    state.index_path.shift();
   }),
 
-  addFrame: action((state, newFrame) =>{
-    const newEditableFrame:PreEditableFrame = {
+  addFrame: action((state, newFrame) => {
+    const newEditableFrame: PreEditableFrame = {
       ...newFrame,
-      editStatus: "saved"
-    }
+      editStatus: "saved",
+    };
+
+
     const newFrames = state.frames.slice();
-    //newFrames.map(frame => frame.editStatus = "saved");
-    newFrames.splice(state.index+1, 0, newEditableFrame);
-    //state.frames = [...state.frames, newEditableFrame];
-    //console.log(state.index+1);
+    var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
 
+    if(state.index_path.length == 1){
+      console.log("top level!");
+      newFrames.splice(place[0] + 1, 0, newEditableFrame);
+    }
+    else{
+      var temp = newFrames[place[0]];
+      var prev = temp;
+      for(let j = 1; j < state.index_path.length; j++){
+        if(temp.kind == "if"){
+          prev = temp;
+          place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
+          temp = temp.body[place[j]];
+        }
+      }
+      console.log("place: " +place);
+
+      if(prev.kind == 'if'){
+        prev.body.splice(place[place.length -1]+1, 0, newEditableFrame );
+      } 
+    }
     state.frames = newFrames.slice();
-
   }),
-
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -445,10 +527,10 @@ export const makeEditable = (
           status: "being-edited",
           save: () => actions.saveFrame(),
           modify: (replacementFrame) =>
-          actions.modifyFrame({
-            idToReplace: bareFrame.id,
-            newFrame: replacementFrame,
-          }),
+            actions.modifyFrame({
+              idToReplace: bareFrame.id,
+              newFrame: replacementFrame,
+            }),
           delete: () => actions.deleteFrame(bareFrame),
           selectIndex: () => actions.onSelectIndex(bareFrame),
         },
@@ -458,32 +540,40 @@ export const makeEditable = (
   }
 };
 
-export const PythonCode = (frames:Array<Frame>): string => {
+export const PythonCode = (frames: Array<Frame>): string => {
   let py_text = "import pytch\nimport random\n";
 
-  frames.forEach(frame => {
-    if(frame.kind === "assignment"){
-        py_text = py_text.concat("\n" + frame.variableName + " = " + frame.valueText); 
-    }
-    else if(frame.kind === "comment"){
-        py_text = py_text.concat("\n#" + frame.commentText);
-    }
-    else if(frame.kind === "statement"){
+  frames.forEach((frame) => {
+    if (frame.kind === "assignment") {
+      py_text = py_text.concat(
+        "\n" + frame.variableName + " = " + frame.valueText
+      );
+    } else if (frame.kind === "comment") {
+      py_text = py_text.concat("\n#" + frame.commentText);
+    } else if (frame.kind === "statement") {
       py_text = py_text.concat("\n" + frame.statementText);
-    }
-    else if(frame.kind === "if"){
-      py_text = py_text.concat("\nif" + frame.condition + ":\n"+ 'print(" In the IF")');
-    }
-    else if(frame.kind === "print"){
+    } else if (frame.kind === "if") {
+      py_text = py_text.concat(
+        "\nif" + frame.condition + ":\n" + 'print(" In the IF")'
+      );
+    } else if (frame.kind === "print") {
       py_text = py_text.concat("\nprint(" + frame.printText + ")\n");
+    } else if (frame.kind === "glide") {
+      py_text = py_text.concat(
+        "\nself.glide_to_xy(" +
+          frame.Xvalue +
+          ", " +
+          frame.Yvalue +
+          ", " +
+          frame.seconds +
+          "\n"
+      );
+    } else if (frame.kind === "wait") {
+      py_text = py_text.concat(
+        "\n pytch.wait_seconds( " + frame.seconds + "\n"
+      );
     }
-    else if(frame.kind === "glide"){
-      py_text = py_text.concat("\nself.glide_to_xy(" + frame.Xvalue + ", " + frame.Yvalue + ", " + frame.seconds + "\n");
-    }
-    else if(frame.kind === "wait"){
-      py_text = py_text.concat("\n pytch.wait_seconds( " + frame.seconds + "\n");
-    }
-  })
+  });
 
   return py_text;
-}
+};

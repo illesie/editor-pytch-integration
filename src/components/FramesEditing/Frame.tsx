@@ -83,7 +83,7 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
       );
     case "being-edited":
       return (
-        <div className="frame">
+        <div className="frame" onDoubleClick={props.editState.save}>
           <div>{buttons}</div>
           <div className="code-content">
             <FrameContent {...props} />
