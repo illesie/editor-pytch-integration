@@ -38,7 +38,6 @@ export const IfFrame: React.FC<Editable<IfFrameT>> = (props) => {
           ></Form.Control>
           {":"}
           {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
-          <Button>Insert</Button>
         </div>
       );
     }

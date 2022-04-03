@@ -605,6 +605,7 @@ export const framesEditor: IFramesEditor = {
       }
 
       if (prev.kind == "if") {
+        newEditableFrame.depth = prev.depth + 1;
         prev.body.splice(place[place.length - 1] + 1, 0, newEditableFrame);
       }
     }
