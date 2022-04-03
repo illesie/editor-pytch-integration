@@ -1,6 +1,4 @@
 import { Action, action, Actions } from "easy-peasy";
-import { forEach } from "jszip";
-import { IndexKind } from "typescript";
 import { assertNever } from "../utils";
 
 ////////////////////////////////////////////////////////////////////////
@@ -8,6 +6,7 @@ import { assertNever } from "../utils";
 type FrameBase<KindLiteral extends string> = {
   id: number;
   kind: KindLiteral;
+  depth: number;
 };
 
 const nextId = (() => {
@@ -27,6 +26,7 @@ export type CommentFrame = FrameBase<"comment"> & CommentCore;
 export const makeCommentFrame = (core: CommentCore): CommentFrame => ({
   id: nextId(),
   kind: "comment",
+  depth: 0,
   ...core,
 });
 
@@ -41,6 +41,7 @@ export type StatementFrame = FrameBase<"statement"> & StatementCore;
 export const makeStatementFrame = (core: StatementCore): StatementFrame => ({
   id: nextId(),
   kind: "statement",
+  depth: 0,
   ...core,
 });
 
@@ -55,6 +56,7 @@ export type PrintFrame = FrameBase<"print"> & PrintCore;
 export const makePrintFrame = (core: PrintCore): PrintFrame => ({
   id: nextId(),
   kind: "print",
+  depth: 0,
   ...core,
 });
 
@@ -69,6 +71,7 @@ export type AssignmentFrame = FrameBase<"assignment"> & AssignmentCore;
 export const makeAssignmentFrame = (core: AssignmentCore): AssignmentFrame => ({
   id: nextId(),
   kind: "assignment",
+  depth: 0,
   ...core,
 });
 
@@ -85,6 +88,7 @@ export const makeListAssignmentFrame = (
 ): ListAssignmentFrame => ({
   id: nextId(),
   kind: "list",
+  depth: 0,
   ...core,
 });
 
@@ -99,6 +103,7 @@ export type IfFrame = FrameBase<"if"> & IfCore;
 export const makeIfFrame = (core: IfCore): IfFrame => ({
   id: nextId(),
   kind: "if",
+  depth: 0,
   ...core,
 });
 
@@ -113,6 +118,7 @@ export type WhileLoopFrame = FrameBase<"while"> & WhileLoopCore;
 export const makeWhileLooptFrame = (core: WhileLoopCore): WhileLoopFrame => ({
   id: nextId(),
   kind: "while",
+  depth: 0,
   ...core,
 });
 
@@ -127,6 +133,7 @@ export type ForLoopFrame = FrameBase<"for"> & ForLoopCore;
 export const makeForLoopFrame = (core: ForLoopCore): ForLoopFrame => ({
   id: nextId(),
   kind: "for",
+  depth: 0,
   ...core,
 });
 
@@ -142,6 +149,7 @@ export type GlideFrame = FrameBase<"glide"> & GlideCore;
 export const makeGlideFrame = (core: GlideCore): GlideFrame => ({
   id: nextId(),
   kind: "glide",
+  depth: 0,
   ...core,
 });
 
@@ -158,6 +166,7 @@ export const makeSayForSecondsFrame = (
 ): SayForSecondsFrame => ({
   id: nextId(),
   kind: "sayforseconds",
+  depth: 0,
   ...core,
 });
 
@@ -171,6 +180,7 @@ export type WaitFrame = FrameBase<"wait"> & WaitCore;
 export const makeWaitFrame = (core: WaitCore): WaitFrame => ({
   id: nextId(),
   kind: "wait",
+  depth: 0,
   ...core,
 });
 
@@ -306,10 +316,11 @@ const frameIndexByIdOrFail = (
   return frameIndex;
 };
 
+
 const findIndexPath = (
   path: Array<number>,
   frame: PreEditableFrame,
-  targetId: number
+  targetId: number,
 ) => {
   if (!frame) {
     return false;
@@ -354,30 +365,35 @@ export const framesEditor: IFramesEditor = {
       kind: "comment",
       commentText: "Hello world!",
       editStatus: "saved",
+      depth: 0,
     },
     {
       id: 1002,
       kind: "comment",
       commentText: "Hello again world!",
       editStatus: "saved",
+      depth: 0,
     },
     {
       id: 1003,
       kind: "if",
       condition: "0 == 42",
       editStatus: "saved",
+      depth: 0,
       body: [
         {
           id: 1010,
           kind: "if",
           condition: "0 == 42",
           editStatus: "saved",
+          depth: 1,
           body: [
             {
               id: 1100,
               kind: "comment",
               commentText: "Hello again world!",
               editStatus: "being-edited",
+              depth: 2,
             },
           ],
         },
@@ -386,6 +402,7 @@ export const framesEditor: IFramesEditor = {
           kind: "comment",
           commentText: "Hello again again world!",
           editStatus: "saved",
+          depth: 1,
         },
       ],
     },
@@ -394,12 +411,14 @@ export const framesEditor: IFramesEditor = {
       kind: "if",
       condition: "0 == 42",
       editStatus: "saved",
+      depth: 0,
       body: [
         {
           id: 1400,
           kind: "comment",
           commentText: "Hello again world!",
           editStatus: "saved",
+          depth: 1,
         },
       ],
     },
@@ -408,6 +427,7 @@ export const framesEditor: IFramesEditor = {
   index_path: [0],
 
   editFrame: action((state, frame) => {
+    saveFrameHelper(state.frames);
     // ------------ Select index to currently edited frame ------------
     state.index_path = [];
     // temporary root for the frames
@@ -416,6 +436,7 @@ export const framesEditor: IFramesEditor = {
       kind: "if",
       editStatus: "saved",
       condition: "",
+      depth: -1,
       body: state.frames,
     };
 
@@ -426,11 +447,9 @@ export const framesEditor: IFramesEditor = {
     var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
 
     if (state.index_path.length == 1) {
-      console.log("top level!");
       newFrames[place[0]].editStatus = "being-edited";
       state.frames = newFrames;
     } else {
-
       var temp = newFrames[place[0]];
       for (let j = 1; j < state.index_path.length; j++) {
         if (temp.kind == "if") {
@@ -448,27 +467,100 @@ export const framesEditor: IFramesEditor = {
 
   ////////////////////////////////////////////////////////////////////////
 
+  // TODO
   modifyFrame: action((state, replaceDescriptor) => {
-    const frameIndex = frameIndexByIdOrFail(
-      state.frames,
+    // ------------ Select index to currently edited frame ------------
+    state.index_path = [];
+    // temporary root for the frames
+    const rootFrame: PreEditableFrame = {
+      id: 999,
+      kind: "if",
+      editStatus: "saved",
+      condition: "",
+      body: state.frames,
+      depth: -1,
+    };
+
+    const found = findIndexPath(
+      state.index_path,
+      rootFrame,
       replaceDescriptor.idToReplace
     );
-    const originalId = state.frames[frameIndex].id;
-    state.frames[frameIndex] = {
-      ...replaceDescriptor.newFrame,
-      id: originalId,
-      editStatus: "being-edited",
-    };
+    state.index_path.shift();
+    //------------------------------------------------------------------
+    var place = [frameIndexByIdOrFail(state.frames, state.index_path[0])];
+
+    if (state.index_path.length == 1) {
+      const originalId = state.frames[place[0]].id;
+      state.frames[place[0]] = {
+        ...replaceDescriptor.newFrame,
+        id: originalId,
+        editStatus: "being-edited",
+      };
+    } else {
+      const newFrames = state.frames.slice();
+      var temp = newFrames[place[0]];
+      var prev = temp;
+      for (let j = 1; j < state.index_path.length; j++) {
+        if (temp.kind == "if") {
+          prev = temp;
+          place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
+          temp = temp.body[place[j]];
+        }
+      }
+      if (prev.kind == "if") {
+        const originalId = prev.body[place[place.length - 1]].id;
+
+        prev.body[place[place.length - 1]] = {
+          ...replaceDescriptor.newFrame,
+          id: originalId,
+          editStatus: "being-edited",
+        };
+      }
+    }
   }),
 
   ////////////////////////////////////////////////////////////////////////
-
   deleteFrame: action((state, frame) => {
     // Find the index and filter by that, to ensure that we do indeed
     // find the to-be-deleted frame.
 
-    const frameIndex = frameIndexByIdOrFail(state.frames, frame.id);
-    state.frames = state.frames.filter((_frame, idx) => idx !== frameIndex);
+    // ------------ Select index to currently edited frame ------------
+    state.index_path = [];
+    // temporary root for the frames
+    const rootFrame: PreEditableFrame = {
+      id: 999,
+      kind: "if",
+      editStatus: "saved",
+      condition: "",
+      body: state.frames,
+      depth: -1,
+    };
+
+    const found = findIndexPath(state.index_path, rootFrame, frame.id);
+    state.index_path.shift();
+    //------------------------------------------------------------------
+
+    const newFrames = state.frames.slice();
+    var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
+    if (state.index_path.length == 1) {
+      state.frames = newFrames.filter((_frame, idx) => idx !== place[0]);
+    } else {
+      var temp = newFrames[place[0]];
+      var prev = temp;
+      for (let j = 1; j < state.index_path.length; j++) {
+        if (temp.kind == "if") {
+          prev = temp;
+          place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
+          temp = temp.body[place[j]];
+        }
+      }
+      if (prev.kind == "if") {
+        prev.body = prev.body.filter(
+          (_frame, idx) => idx !== place[place.length - 1]
+        );
+      }
+    }
   }),
 
   ////////////////////////////////////////////////////////////////////////
@@ -482,6 +574,7 @@ export const framesEditor: IFramesEditor = {
       editStatus: "saved",
       condition: "",
       body: state.frames,
+      depth: -1,
     };
 
     const found = findIndexPath(state.index_path, rootFrame, current_frame.id);
@@ -498,9 +591,7 @@ export const framesEditor: IFramesEditor = {
 
     const newFrames = state.frames.slice();
     var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
-
     if (state.index_path.length == 1) {
-      console.log("top level!");
       newFrames.splice(place[0] + 1, 0, newEditableFrame);
     } else {
       var temp = newFrames[place[0]];
@@ -577,40 +668,72 @@ export const makeEditable = (
   }
 };
 
-export const PythonCode = (frames: Array<Frame>): string => {
+const printPythonCode = (frame: PreEditableFrame) => {
+  let py_text = "";
+  if(frame.depth == -1){
+    return py_text;
+  }
+  
+  for (let j = 0; j < frame.depth; j++) {
+    py_text = py_text.concat("    ");
+  }
+
+  if (frame.kind === "assignment") {
+    py_text = py_text.concat(
+      frame.variableName + " = " + frame.valueText
+    );
+  } else if (frame.kind === "comment") {
+    py_text = py_text.concat("# " + frame.commentText);
+  } else if (frame.kind === "statement") {
+    py_text = py_text.concat(frame.statementText);
+  } else if (frame.kind === "if") {
+    py_text = py_text.concat(
+      "if " + frame.condition + ":");
+  } else if (frame.kind === "print") {
+    py_text = py_text.concat("print(" + frame.printText + ")");
+  } else if (frame.kind === "glide") {
+    py_text = py_text.concat(
+      "self.glide_to_xy(" +
+        frame.Xvalue +
+        ", " +
+        frame.Yvalue +
+        ", " +
+        frame.seconds +
+        ""
+    );
+  } else if (frame.kind === "wait") {
+    py_text = py_text.concat("pytch.wait_seconds( " + frame.seconds);
+  }
+  console.log(py_text);
+  return py_text;
+};
+
+const printPreorder = (frame: PreEditableFrame) => {
+  var py_text = "";
+  py_text.concat(printPythonCode(frame) + "\n");
+
+  if (frame.kind == "if") {
+    for (var j = 0; j < frame.body.length; j++) {
+      printPreorder(frame.body[j]);
+    }
+  }
+};
+
+//TODO - Implement Preprder Tree Traversal
+export const PythonCode = (frames: Array<PreEditableFrame>): string => {
   let py_text = "import pytch\nimport random\n";
 
-  frames.forEach((frame) => {
-    if (frame.kind === "assignment") {
-      py_text = py_text.concat(
-        "\n" + frame.variableName + " = " + frame.valueText
-      );
-    } else if (frame.kind === "comment") {
-      py_text = py_text.concat("\n#" + frame.commentText);
-    } else if (frame.kind === "statement") {
-      py_text = py_text.concat("\n" + frame.statementText);
-    } else if (frame.kind === "if") {
-      py_text = py_text.concat(
-        "\nif" + frame.condition + ":\n" + 'print(" In the IF")'
-      );
-    } else if (frame.kind === "print") {
-      py_text = py_text.concat("\nprint(" + frame.printText + ")\n");
-    } else if (frame.kind === "glide") {
-      py_text = py_text.concat(
-        "\nself.glide_to_xy(" +
-          frame.Xvalue +
-          ", " +
-          frame.Yvalue +
-          ", " +
-          frame.seconds +
-          "\n"
-      );
-    } else if (frame.kind === "wait") {
-      py_text = py_text.concat(
-        "\n pytch.wait_seconds( " + frame.seconds + "\n"
-      );
-    }
-  });
+  // temporary root for the frames
+  const rootFrame: PreEditableFrame = {
+    id: 999,
+    kind: "if",
+    condition: "",
+    editStatus: "saved",
+    body: frames,
+    depth: -1,
+  };
+
+  printPreorder(rootFrame);
 
   return py_text;
 };
