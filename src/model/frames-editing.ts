@@ -306,31 +306,38 @@ const frameIndexByIdOrFail = (
   return frameIndex;
 };
 
-
-const hasPath = (
+const findIndexPath = (
   path: Array<number>,
   frame: PreEditableFrame,
   targetId: number
 ) => {
-  if(!frame){
+  if (!frame) {
     return false;
   }
 
   path.push(frame.id);
-  if(frame.id === targetId){
+  if (frame.id === targetId) {
     return true;
-  }
-  else{
-  if(frame.kind == "if"){
-
-    for (var j = 0; j < frame.body.length; j++){
-      if (hasPath(path, frame.body[j], targetId)) {
-        return true;
+  } else {
+    if (frame.kind == "if") {
+      for (var j = 0; j < frame.body.length; j++) {
+        if (findIndexPath(path, frame.body[j], targetId)) {
+          return true;
+        }
       }
     }
+    path.pop();
+    return false;
   }
-  path.pop();
-  return false;}
+};
+
+const saveFrameHelper = (frames: PreEditableFrame[]) => {
+  frames.forEach((frame) => {
+    if (frame.kind == "if") {
+      saveFrameHelper(frame.body);
+    }
+    frame.editStatus = "saved";
+  });
 };
 
 // Value of the model slice when the app starts up.
@@ -370,7 +377,7 @@ export const framesEditor: IFramesEditor = {
               id: 1100,
               kind: "comment",
               commentText: "Hello again world!",
-              editStatus: "saved",
+              editStatus: "being-edited",
             },
           ],
         },
@@ -401,18 +408,45 @@ export const framesEditor: IFramesEditor = {
   index_path: [0],
 
   editFrame: action((state, frame) => {
-    const frameIndex = frameIndexByIdOrFail(state.frames, frame.id);
-    state.frames.forEach((frame) => {
-      frame.editStatus = "saved";
-    });
-    state.frames[frameIndex].editStatus = "being-edited";
+    // ------------ Select index to currently edited frame ------------
+    state.index_path = [];
+    // temporary root for the frames
+    const rootFrame: PreEditableFrame = {
+      id: 999,
+      kind: "if",
+      editStatus: "saved",
+      condition: "",
+      body: state.frames,
+    };
+
+    const found = findIndexPath(state.index_path, rootFrame, frame.id);
+    state.index_path.shift();
+    //------------------------------------------------------------------
+    const newFrames = state.frames.slice();
+    var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
+
+    if (state.index_path.length == 1) {
+      console.log("top level!");
+      newFrames[place[0]].editStatus = "being-edited";
+      state.frames = newFrames;
+    } else {
+
+      var temp = newFrames[place[0]];
+      for (let j = 1; j < state.index_path.length; j++) {
+        if (temp.kind == "if") {
+          place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
+          temp = temp.body[place[j]];
+        }
+      }
+      temp.editStatus = "being-edited";
+    }
   }),
 
   saveFrame: action((state) => {
-    state.frames.forEach((frame) => {
-      frame.editStatus = "saved";
-    });
+    saveFrameHelper(state.frames);
   }),
+
+  ////////////////////////////////////////////////////////////////////////
 
   modifyFrame: action((state, replaceDescriptor) => {
     const frameIndex = frameIndexByIdOrFail(
@@ -427,6 +461,8 @@ export const framesEditor: IFramesEditor = {
     };
   }),
 
+  ////////////////////////////////////////////////////////////////////////
+
   deleteFrame: action((state, frame) => {
     // Find the index and filter by that, to ensure that we do indeed
     // find the to-be-deleted frame.
@@ -435,6 +471,8 @@ export const framesEditor: IFramesEditor = {
     state.frames = state.frames.filter((_frame, idx) => idx !== frameIndex);
   }),
 
+  ////////////////////////////////////////////////////////////////////////
+
   onSelectIndex: action((state, current_frame) => {
     state.index_path = [];
     // temporary root for the frames
@@ -442,13 +480,15 @@ export const framesEditor: IFramesEditor = {
       id: 999,
       kind: "if",
       editStatus: "saved",
-      condition: '',
+      condition: "",
       body: state.frames,
     };
-    
-    const found = hasPath(state.index_path, rootFrame, current_frame.id);
+
+    const found = findIndexPath(state.index_path, rootFrame, current_frame.id);
     state.index_path.shift();
   }),
+
+  ////////////////////////////////////////////////////////////////////////
 
   addFrame: action((state, newFrame) => {
     const newEditableFrame: PreEditableFrame = {
@@ -456,29 +496,26 @@ export const framesEditor: IFramesEditor = {
       editStatus: "saved",
     };
 
-
     const newFrames = state.frames.slice();
     var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
 
-    if(state.index_path.length == 1){
+    if (state.index_path.length == 1) {
       console.log("top level!");
       newFrames.splice(place[0] + 1, 0, newEditableFrame);
-    }
-    else{
+    } else {
       var temp = newFrames[place[0]];
       var prev = temp;
-      for(let j = 1; j < state.index_path.length; j++){
-        if(temp.kind == "if"){
+      for (let j = 1; j < state.index_path.length; j++) {
+        if (temp.kind == "if") {
           prev = temp;
           place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
           temp = temp.body[place[j]];
         }
       }
-      console.log("place: " +place);
 
-      if(prev.kind == 'if'){
-        prev.body.splice(place[place.length -1]+1, 0, newEditableFrame );
-      } 
+      if (prev.kind == "if") {
+        prev.body.splice(place[place.length - 1] + 1, 0, newEditableFrame);
+      }
     }
     state.frames = newFrames.slice();
   }),
