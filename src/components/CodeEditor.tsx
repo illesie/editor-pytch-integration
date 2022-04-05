@@ -21,9 +21,28 @@ import {
   makeGlideFrame,
   makeSayForSecondsFrame,
   makeWaitFrame,
+  makeInvisibleFrame,
+  makeForLoopFrame,
+  makeWhileLoopFrame,
+  makeClassFrame,
+  makeDefFrame,
+  makeSpriteClickedFrame,
+  makeFlagClickedFrame,
+  makeKeyPressedFrame,
 } from "../model/frames-editing";
 import Button from "react-bootstrap/Button";
-import {FaCar, FaHashtag, FaEquals, FaPlusSquare, FaPenFancy, FaQuestion} from "react-icons/fa"
+import {
+  FaCar,
+  FaHashtag,
+  FaEquals,
+  FaCode,
+  FaPenFancy,
+  FaCodeBranch,
+  FaCircleNotch,
+  FaHandPointer,
+} from "react-icons/fa";
+import { InvisibleFrame } from "./FramesEditing/InvisibleFrame";
+import { SpriteClickedFrame } from "./FramesEditing/SpriteClickedFrame";
 
 const ReadOnlyOverlay = () => {
   const syncState = useStoreState((state) => state.activeProject.syncState);
@@ -137,6 +156,61 @@ export const FrameControls = () => {
 
   const addIfFrame = () => {
     const newFrame = makeIfFrame({ condition: "", body: [] });
+    const InvisibleFrame = makeInvisibleFrame();
+    newFrame.body = [
+      {
+        ...InvisibleFrame,
+        editStatus: "saved",
+      },
+    ];
+    addFrame(newFrame);
+  };
+
+  const addForLoopFrame = () => {
+    const newFrame = makeForLoopFrame({ condition: "", body: [] });
+    const InvisibleFrame = makeInvisibleFrame();
+    newFrame.body = [
+      {
+        ...InvisibleFrame,
+        editStatus: "saved",
+      },
+    ];
+    addFrame(newFrame);
+  };
+
+  const addWhileLoopFrame = () => {
+    const newFrame = makeWhileLoopFrame({ condition: "", body: [] });
+    const InvisibleFrame = makeInvisibleFrame();
+    newFrame.body = [
+      {
+        ...InvisibleFrame,
+        editStatus: "saved",
+      },
+    ];
+    addFrame(newFrame);
+  };
+
+  const addClassFrame = () => {
+    const newFrame = makeClassFrame({ name: "", body: [] });
+    const InvisibleFrame = makeInvisibleFrame();
+    newFrame.body = [
+      {
+        ...InvisibleFrame,
+        editStatus: "saved",
+      },
+    ];
+    addFrame(newFrame);
+  };
+
+  const addDefFrame = () => {
+    const newFrame = makeDefFrame({ name: "", body: [] });
+    const InvisibleFrame = makeInvisibleFrame();
+    newFrame.body = [
+      {
+        ...InvisibleFrame,
+        editStatus: "saved",
+      },
+    ];
     addFrame(newFrame);
   };
 
@@ -155,6 +229,21 @@ export const FrameControls = () => {
     addFrame(newFrame);
   };
 
+  const addSpriteClickedFrame = () => {
+    const newFrame = makeSpriteClickedFrame();
+    addFrame(newFrame);
+  };
+
+  const addFlagClickedFrame = () => {
+    const newFrame = makeFlagClickedFrame();
+    addFrame(newFrame);
+  };
+
+  const addKeyPressedFrame = () => {
+    const newFrame = makeKeyPressedFrame({ key_name: ""});
+    addFrame(newFrame);
+  };
+
   const addWaitFrame = () => {
     const newFrame = makeWaitFrame({ seconds: "1" });
     addFrame(newFrame);
@@ -164,7 +253,14 @@ export const FrameControls = () => {
     <div className="frame-controls">
       Add Frames
       <div className="dropdown">
-        <Button className="dropbtn"> <div className="button-icon"> <FaCar size={20}/> </div> My Sprite</Button>
+        <Button className="dropbtn">
+          {" "}
+          <div className="button-icon">
+            {" "}
+            <FaCar size={20} />{" "}
+          </div>{" "}
+          My Sprite
+        </Button>
         <div className="dropdown-content">
           <Button className="frame-control-buttons" onClick={addGlideFrame}>
             Glide
@@ -180,25 +276,89 @@ export const FrameControls = () => {
           </Button>
         </div>
       </div>
+      <div className="dropdown">
+        <Button className="dropbtn">
+          <div className="button-icon">
+            <FaHandPointer size={20} />
+          </div>
+          Actions
+        </Button>
+        <div className="dropdown-content">
+          <Button
+            className="frame-control-buttons"
+            onClick={addSpriteClickedFrame}
+          >
+            Sprite Clicked
+          </Button>
+          <Button
+            className="frame-control-buttons"
+            onClick={addFlagClickedFrame}
+          >
+            Green Flag Clicked
+          </Button>
+          <Button
+            className="frame-control-buttons"
+            onClick={addKeyPressedFrame}
+          >
+            KeyPressed
+          </Button>
+        </div>
+      </div>
       <Button className="frame-control-buttons" onClick={addCommentFrame}>
-        <div className="button-icon"> <FaHashtag  size={15}/></div>
+        <div className="button-icon">
+          {" "}
+          <FaHashtag size={15} />
+        </div>
         Comment
       </Button>
       <Button className="frame-control-buttons" onClick={addAssignmentFrame}>
-        <div className="button-icon"> <FaEquals size={15}/></div>
+        <div className="button-icon">
+          {" "}
+          <FaEquals size={15} />
+        </div>
         Assignment
       </Button>
       <Button className="frame-control-buttons" onClick={addStatementFrame}>
-        <div className="button-icon"> <FaPlusSquare size={15}/></div>
+        <div className="button-icon">
+          {" "}
+          <FaCode size={15} />
+        </div>
         Statement
       </Button>
       <Button className="frame-control-buttons" onClick={addPrintFrame}>
-        <div className="button-icon"> <FaPenFancy size={15}/></div>
+        <div className="button-icon">
+          {" "}
+          <FaPenFancy size={15} />
+        </div>
         Print
       </Button>
       <Button className="frame-control-buttons" onClick={addIfFrame}>
-        <div className="button-icon"> <FaQuestion size={15}/></div>
+        <div className="button-icon">
+          {" "}
+          <FaCodeBranch size={15} />
+        </div>
         If
+      </Button>
+      <Button className="frame-control-buttons" onClick={addForLoopFrame}>
+        <div className="button-icon">
+          {" "}
+          <FaCircleNotch size={15} />
+        </div>
+        For Loop
+      </Button>
+      <Button className="frame-control-buttons" onClick={addWhileLoopFrame}>
+        <div className="button-icon">
+          {" "}
+          <FaCircleNotch size={15} />
+        </div>
+        While Loop
+      </Button>
+      Advanced Frames
+      <Button className="frame-control-buttons" onClick={addClassFrame}>
+        New Sprite Class
+      </Button>
+      <Button className="frame-control-buttons" onClick={addDefFrame}>
+        Function Definition
       </Button>
     </div>
   );

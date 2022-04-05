@@ -598,13 +598,17 @@ export const activeProject: IActiveProject = {
       const framesEditor = helpers.getStoreState().framesEditor;
       const python_code = PythonCode(framesEditor.frames);
 
-      const editor_project:IProjectContent=
+      const editor_project = helpers.getState().project;
+
+      editor_project.codeText = python_code;
+      /*
       {
         name: "Editor Project",
         id:123,
         codeText: python_code,
-        assets: [],
+        assets: project.assets,
       };
+      */
 
       const buildOutcome = await build(editor_project, appendOutput, recordError);
       console.log("build outcome:", buildOutcome);

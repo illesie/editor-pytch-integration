@@ -107,25 +107,10 @@ export const makeIfFrame = (core: IfCore): IfFrame => ({
   ...core,
 });
 
-// While Loop
-type WhileLoopCore = {
-  condition: string;
-  //value: [];
-};
-
-export type WhileLoopFrame = FrameBase<"while"> & WhileLoopCore;
-
-export const makeWhileLooptFrame = (core: WhileLoopCore): WhileLoopFrame => ({
-  id: nextId(),
-  kind: "while",
-  depth: 0,
-  ...core,
-});
-
 // For Loop
 type ForLoopCore = {
-  condition: string;
-  // value
+  condition: string,
+  body: Array<PreEditableFrame>,
 };
 
 export type ForLoopFrame = FrameBase<"for"> & ForLoopCore;
@@ -133,6 +118,51 @@ export type ForLoopFrame = FrameBase<"for"> & ForLoopCore;
 export const makeForLoopFrame = (core: ForLoopCore): ForLoopFrame => ({
   id: nextId(),
   kind: "for",
+  depth: 0,
+  ...core,
+});
+
+// While Loop
+type WhileLoopCore = {
+  condition: string;
+  body: Array<PreEditableFrame>;
+};
+
+export type WhileLoopFrame = FrameBase<"while"> & WhileLoopCore;
+
+export const makeWhileLoopFrame = (core: WhileLoopCore): WhileLoopFrame => ({
+  id: nextId(),
+  kind: "while",
+  depth: 0,
+  ...core,
+});
+
+// Class Definition
+type ClassCore = {
+  name: string;
+  body: Array<PreEditableFrame>;
+};
+
+export type ClassFrame = FrameBase<"class"> & ClassCore;
+
+export const makeClassFrame = (core: ClassCore): ClassFrame => ({
+  id: nextId(),
+  kind: "class",
+  depth: 0,
+  ...core,
+});
+
+// Function Definition
+type DefCore = {
+  name: string;
+  body: Array<PreEditableFrame>;
+};
+
+export type DefFrame = FrameBase<"def"> & DefCore;
+
+export const makeDefFrame = (core: DefCore): DefFrame => ({
+  id: nextId(),
+  kind: "def",
   depth: 0,
   ...core,
 });
@@ -184,6 +214,47 @@ export const makeWaitFrame = (core: WaitCore): WaitFrame => ({
   ...core,
 });
 
+// Invisible Frame for Insertion Points
+export type InvisibleFrame = FrameBase<"invisible">;
+
+export const makeInvisibleFrame = (): InvisibleFrame => ({
+  id: nextId(),
+  kind: "invisible",
+  depth: 0,
+});
+
+//Actions
+export type SpriteClickedFrame = FrameBase<"spriteClicked">;
+export const makeSpriteClickedFrame = (): SpriteClickedFrame => ({
+  id: nextId(),
+  kind: "spriteClicked",
+  depth: 0,
+});
+
+export type FlagClickedFrame = FrameBase<"flagClicked">;
+export const makeFlagClickedFrame = (): FlagClickedFrame => ({
+  id: nextId(),
+  kind: "flagClicked",
+  depth: 0,
+});
+
+// Comment
+
+type KeyPressedCore = {
+  key_name: string;
+};
+
+export type KeyPressedFrame = FrameBase<"keyPressed"> & KeyPressedCore;
+
+export const makeKeyPressedFrame = (core: KeyPressedCore): KeyPressedFrame => ({
+  id: nextId(),
+  kind: "keyPressed",
+  depth: 0,
+  ...core,
+});
+
+
+
 // TODO:
 //
 ////////////////////////////////////////////////////////////////////////
@@ -192,6 +263,7 @@ export const makeWaitFrame = (core: WaitCore): WaitFrame => ({
 // TODO: Uncomment AssignmentFrame; add other frame types when done.
 
 export type Frame =
+  | InvisibleFrame 
   | CommentFrame
   | AssignmentFrame
   | StatementFrame
@@ -199,7 +271,15 @@ export type Frame =
   | PrintFrame
   | GlideFrame
   | SayForSecondsFrame
-  | WaitFrame /*| ListAssignmentFrame | IfFrame | ListAssignmentFrame | ForLoopFrame | WhileLoopFrame | ... | */;
+  | WaitFrame
+  | ForLoopFrame
+  | WhileLoopFrame
+  | ClassFrame
+  | DefFrame
+  | SpriteClickedFrame
+  | FlagClickedFrame
+  | KeyPressedFrame
+  ;
 
 ////////////////////////////////////////////////////////////////////////
 // Editing a frame
@@ -316,7 +396,6 @@ const frameIndexByIdOrFail = (
   return frameIndex;
 };
 
-
 const findIndexPath = (
   path: Array<number>,
   frame: PreEditableFrame,
@@ -330,7 +409,8 @@ const findIndexPath = (
   if (frame.id === targetId) {
     return true;
   } else {
-    if (frame.kind == "if") {
+    //if (complexFrameKinds.includes(frame.kind)) {
+    if ('body' in frame) {
       for (var j = 0; j < frame.body.length; j++) {
         if (findIndexPath(path, frame.body[j], targetId)) {
           return true;
@@ -344,7 +424,7 @@ const findIndexPath = (
 
 const saveFrameHelper = (frames: PreEditableFrame[]) => {
   frames.forEach((frame) => {
-    if (frame.kind == "if") {
+    if ('body' in frame) {
       saveFrameHelper(frame.body);
     }
     frame.editStatus = "saved";
@@ -356,69 +436,74 @@ export const framesEditor: IFramesEditor = {
   // Sample data to develop with; in the final thing this will be
   // instead be
   //
-  // frames: []
-  //
+  /*
+  frames: [
+    {
+      id: 1000,
+      kind: "class",
+      editStatus:"saved",
+      name: "MySprite",
+      body: [
+        { 
+          id: 1000,
+          kind: "invisible",
+          editStatus: "saved",
+          depth: 0,
+        },
+      ]
+    }
+  ]
+  */
   // so the editor starts empty.
   frames: [
     {
-      id: 1001,
-      kind: "comment",
-      commentText: "Hello world!",
-      editStatus: "saved",
-      depth: 0,
-    },
-    {
-      id: 1002,
-      kind: "comment",
-      commentText: "Hello again world!",
-      editStatus: "saved",
-      depth: 0,
-    },
-    {
-      id: 1003,
-      kind: "if",
-      condition: "0 == 42",
-      editStatus: "saved",
+      id: 10,
+      kind: "class",
+      editStatus:"saved",
+      name: "MySprite",
       depth: 0,
       body: [
+        { 
+          id: 1000,
+          kind: "invisible",
+          editStatus: "saved",
+          depth: 1,
+        },
         {
-          id: 1010,
-          kind: "if",
-          condition: "0 == 42",
+          id: 1001,
+          kind: "comment",
+          commentText: "Hello world!",
+          editStatus: "saved",
+          depth: 1,
+        },
+        {
+          id: 1002,
+          kind: "statement",
+          statementText: 'print("hello")',
+          editStatus: "saved",
+          depth: 1,
+        },
+        {
+          id: 1004,
+          kind: "while",
+          condition: "true",
           editStatus: "saved",
           depth: 1,
           body: [
-            {
-              id: 1100,
+              { 
+                id: 1005,
+                kind: "invisible",
+                editStatus: "saved",
+                depth: 2,
+              },
+              {
+              id: 1006,
               kind: "comment",
               commentText: "Hello again world!",
-              editStatus: "being-edited",
+              editStatus: "saved",
               depth: 2,
-            },
+              },
           ],
-        },
-        {
-          id: 1011,
-          kind: "comment",
-          commentText: "Hello again again world!",
-          editStatus: "saved",
-          depth: 1,
-        },
-      ],
-    },
-    {
-      id: 1004,
-      kind: "if",
-      condition: "0 == 42",
-      editStatus: "saved",
-      depth: 0,
-      body: [
-        {
-          id: 1400,
-          kind: "comment",
-          commentText: "Hello again world!",
-          editStatus: "saved",
-          depth: 1,
         },
       ],
     },
@@ -452,7 +537,7 @@ export const framesEditor: IFramesEditor = {
     } else {
       var temp = newFrames[place[0]];
       for (let j = 1; j < state.index_path.length; j++) {
-        if (temp.kind == "if") {
+        if ('body' in temp) {
           place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
           temp = temp.body[place[j]];
         }
@@ -502,13 +587,13 @@ export const framesEditor: IFramesEditor = {
       var temp = newFrames[place[0]];
       var prev = temp;
       for (let j = 1; j < state.index_path.length; j++) {
-        if (temp.kind == "if") {
+        if ('body' in temp) {
           prev = temp;
           place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
           temp = temp.body[place[j]];
         }
       }
-      if (prev.kind == "if") {
+      if ('body' in prev) {
         const originalId = prev.body[place[place.length - 1]].id;
 
         prev.body[place[place.length - 1]] = {
@@ -549,13 +634,13 @@ export const framesEditor: IFramesEditor = {
       var temp = newFrames[place[0]];
       var prev = temp;
       for (let j = 1; j < state.index_path.length; j++) {
-        if (temp.kind == "if") {
+        if ('body' in temp) {
           prev = temp;
           place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
           temp = temp.body[place[j]];
         }
       }
-      if (prev.kind == "if") {
+      if ('body' in prev) {
         prev.body = prev.body.filter(
           (_frame, idx) => idx !== place[place.length - 1]
         );
@@ -597,14 +682,14 @@ export const framesEditor: IFramesEditor = {
       var temp = newFrames[place[0]];
       var prev = temp;
       for (let j = 1; j < state.index_path.length; j++) {
-        if (temp.kind == "if") {
+        if ('body' in temp) {
           prev = temp;
           place.push(frameIndexByIdOrFail(temp.body, state.index_path[j]));
           temp = temp.body[place[j]];
         }
       }
 
-      if (prev.kind == "if") {
+      if ('body' in prev) {
         newEditableFrame.depth = prev.depth + 1;
         prev.body.splice(place[place.length - 1] + 1, 0, newEditableFrame);
       }
@@ -678,7 +763,6 @@ const printPythonCode = (frame: PreEditableFrame) => {
   for (let j = 0; j < frame.depth; j++) {
     py_text = py_text.concat("    ");
   }
-
   if (frame.kind === "assignment") {
     py_text = py_text.concat(
       frame.variableName + " = " + frame.valueText
@@ -689,7 +773,19 @@ const printPythonCode = (frame: PreEditableFrame) => {
     py_text = py_text.concat(frame.statementText);
   } else if (frame.kind === "if") {
     py_text = py_text.concat(
-      "if " + frame.condition + ":");
+      "if " + frame.condition + ":");   
+  } else if (frame.kind === "for") {
+    py_text = py_text.concat(
+      "for " + frame.condition + ":");      
+  }else if (frame.kind === "while") {
+    py_text = py_text.concat(
+      "while " + frame.condition + ":");
+  } else if (frame.kind === "class") {
+    py_text = py_text.concat(
+      "class " + frame.name + "( pytch.Sprite )");
+  } else if (frame.kind === "def") {
+    py_text = py_text.concat(
+      "def " + frame.name + "(self):");
   } else if (frame.kind === "print") {
     py_text = py_text.concat("print(" + frame.printText + ")");
   } else if (frame.kind === "glide") {
@@ -704,18 +800,25 @@ const printPythonCode = (frame: PreEditableFrame) => {
     );
   } else if (frame.kind === "wait") {
     py_text = py_text.concat("pytch.wait_seconds( " + frame.seconds);
+  } else if (frame.kind === "spriteClicked") {
+    py_text = py_text.concat("@pytch.when_this_sprite_clicked");
+  } else if (frame.kind === "flagClicked") {
+  py_text = py_text.concat("@pytch.when_green_flag_clicked");
+  } else if (frame.kind === "keyPressed") {
+  py_text = py_text.concat("@pytch.when_key_pressed("+frame.key_name+")");
   }
   console.log(py_text);
   return py_text;
 };
 
-const printPreorder = (frame: PreEditableFrame) => {
-  var py_text = "";
-  py_text.concat(printPythonCode(frame) + "\n");
+const printPreorder = (frame: PreEditableFrame, codeLines: Array<string>) => {
+  if( frame.kind != "invisible" ){
+    codeLines.push(printPythonCode(frame) + "\n");
+  }
 
-  if (frame.kind == "if") {
+  if ('body' in frame) {
     for (var j = 0; j < frame.body.length; j++) {
-      printPreorder(frame.body[j]);
+      printPreorder(frame.body[j], codeLines);
     }
   }
 };
@@ -734,7 +837,13 @@ export const PythonCode = (frames: Array<PreEditableFrame>): string => {
     depth: -1,
   };
 
-  printPreorder(rootFrame);
+  let codeLines = [py_text];
 
-  return py_text;
+  printPreorder(rootFrame, codeLines);
+  //console.log(codeLines);
+  //return codeLines.join("");
+  let tempcode = 'import pytch\n\nclass DoubleSnake(pytch.Sprite):\n    Costumes = ["python-logo.png"]\n    @pytch.when_this_sprite_clicked\n    def say_hello(self):\n        self.say_for_seconds("Hello!", 2.0)\n    @pytch.when_key_pressed("ArrowLeft")\n    def move_left(self):\n        self.change_x(-10)\n    @pytch.when_key_pressed("ArrowRight")\n    def move_right(self):\n        self.change_x(10)\nclass GreenBurst(pytch.Stage):\n    Backdrops = ["green-burst.jpg"]'; 
+
+  console.log(tempcode);
+  return tempcode;
 };

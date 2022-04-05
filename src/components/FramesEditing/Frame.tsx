@@ -2,6 +2,7 @@ import React from "react";
 import Button from "react-bootstrap/Button";
 
 import { Editable, Frame as FrameT } from "../../model/frames-editing";
+import { InvisibleFrame } from "./InvisibleFrame";
 import { CommentFrame } from "./CommentFrame";
 import { AssignmentFrame } from "./AssignmentFrame";
 import { StatementFrame } from "./StatementFrame";
@@ -10,9 +11,18 @@ import { PrintFrame } from "./PrintFrame";
 import { GlideFrame } from "./GlideFrame";
 import { SayForSecondsFrame } from "./SayForSecondsFrame";
 import { WaitFrame } from "./WaitFrame";
+import { ForLoopFrame } from "./ForLoopFrame";
+import { WhileLoopFrame } from "./WhileLoopFrame";
+import { ClassFrame } from "./ClassFrame";
+import { DefFrame } from "./DefFrame";
+import { SpriteClickedFrame } from "./SpriteClickedFrame";
+import { FlagClickedFrame } from "./FlagClickedFrame";
+import { KeyPressedFrame } from "./KeyPressedFrame";
+
 import { FaTimes, FaPen, FaCheck } from "react-icons/fa";
 
 const componentFromKind = {
+  invisible: InvisibleFrame,
   comment: CommentFrame,
   assignment: AssignmentFrame,
   statement: StatementFrame,
@@ -21,9 +31,13 @@ const componentFromKind = {
   glide: GlideFrame,
   sayforseconds: SayForSecondsFrame,
   wait: WaitFrame,
-  // TODO: Add
-  // ---
-  // all frame types when implemented.
+  for: ForLoopFrame,
+  while: WhileLoopFrame,
+  class: ClassFrame,
+  def: DefFrame,
+  spriteClicked: SpriteClickedFrame,
+  flagClicked: FlagClickedFrame,
+  keyPressed: KeyPressedFrame,
 };
 
 const FrameContent: React.FC<Editable<FrameT>> = (props) => {
@@ -38,7 +52,18 @@ const FrameContent: React.FC<Editable<FrameT>> = (props) => {
 };
 
 export const Frame: React.FC<Editable<FrameT>> = (props) => {
-  const buttons = ((editState) => {
+  if (props.frame.kind == "invisible") {
+    return (
+      <div>
+        <Button
+          className="index-button"
+          onClick={() => props.editState.selectIndex()}
+        />
+      </div>
+    );
+  }
+
+  var buttons = ((editState) => {
     switch (editState.status) {
       case "saved":
         return (
@@ -64,12 +89,35 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
         );
     }
   })(props.editState);
+  
+  if(props.frame.kind == 'class'){
+    buttons = <></>;
+  }
+
+  if(['spriteClicked', 'flagClicked'].includes(props.frame.kind)){
+    buttons = ((editState) => {
+      switch (editState.status) {
+        case "saved":
+          return (
+              <span onClick={editState.delete}>
+                <FaTimes color="#e33" size={25} />
+              </span>
+          );
+        case "being-edited":
+          return (
+              <span onClick={editState.delete}>
+                <FaTimes color="#e33" size={25} />
+              </span>
+          );
+      }
+    })(props.editState);
+  }
 
   switch (props.editState.status) {
     case "saved":
       return (
         <>
-          <div className="frame" onDoubleClick={props.editState.edit}>
+          <div className="frame">
             <div>{buttons}</div>
             <div className="code-content">
               <FrameContent {...props} />
@@ -83,16 +131,18 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
       );
     case "being-edited":
       return (
-        <div className="frame" onDoubleClick={props.editState.save}>
-          <div>{buttons}</div>
-          <div className="code-content">
-            <FrameContent {...props} />
+        <>
+          <div className="frame">
+            <div>{buttons}</div>
+            <div className="code-content">
+              <FrameContent {...props} />
+            </div>
           </div>
           <Button
             className="index-button"
             onClick={() => props.editState.selectIndex()}
           />
-        </div>
+        </>
       );
   }
 };
