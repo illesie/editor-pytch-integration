@@ -253,14 +253,8 @@ export const makeKeyPressedFrame = (core: KeyPressedCore): KeyPressedFrame => ({
   ...core,
 });
 
-
-
-// TODO:
-//
 ////////////////////////////////////////////////////////////////////////
 // All frame kinds
-
-// TODO: Uncomment AssignmentFrame; add other frame types when done.
 
 export type Frame =
   | InvisibleFrame 
@@ -466,44 +460,45 @@ export const framesEditor: IFramesEditor = {
         { 
           id: 1000,
           kind: "invisible",
-          editStatus: "saved",
+          editStatus:"saved",
           depth: 1,
         },
-        {
+        { 
           id: 1001,
-          kind: "comment",
-          commentText: "Hello world!",
-          editStatus: "saved",
+          kind: "assignment",
+          variableName: "Costumes",
+          valueText: '["Snake.png"]',
+          editStatus:"saved",
           depth: 1,
         },
         {
-          id: 1002,
-          kind: "statement",
-          statementText: 'print("hello")',
-          editStatus: "saved",
+          id:1002,
+          kind: "flagClicked",
+          editStatus:"saved",
           depth: 1,
         },
         {
-          id: 1004,
-          kind: "while",
-          condition: "true",
-          editStatus: "saved",
+          id:1003,
+          kind: "def",
+          editStatus:"saved",
           depth: 1,
+          name: "speak",
           body: [
-              { 
-                id: 1005,
-                kind: "invisible",
-                editStatus: "saved",
-                depth: 2,
-              },
-              {
-              id: 1006,
-              kind: "comment",
-              commentText: "Hello again world!",
-              editStatus: "saved",
+            { 
+              id: 1004,
+              kind: "invisible",
+              editStatus:"saved",
               depth: 2,
-              },
-          ],
+            },
+            {
+              id:1005,
+              kind: "sayforseconds",
+              seconds: "2.0",
+              text: '"Hello"',
+              editStatus:"saved",
+              depth: 2,
+            }
+          ]
         },
       ],
     },
@@ -581,6 +576,7 @@ export const framesEditor: IFramesEditor = {
         ...replaceDescriptor.newFrame,
         id: originalId,
         editStatus: "being-edited",
+        depth: 0,
       };
     } else {
       const newFrames = state.frames.slice();
@@ -600,6 +596,7 @@ export const framesEditor: IFramesEditor = {
           ...replaceDescriptor.newFrame,
           id: originalId,
           editStatus: "being-edited",
+          depth: prev.depth + 1,
         };
       }
     }
@@ -782,7 +779,7 @@ const printPythonCode = (frame: PreEditableFrame) => {
       "while " + frame.condition + ":");
   } else if (frame.kind === "class") {
     py_text = py_text.concat(
-      "class " + frame.name + "( pytch.Sprite )");
+      "class " + frame.name + "( pytch.Sprite ):");
   } else if (frame.kind === "def") {
     py_text = py_text.concat(
       "def " + frame.name + "(self):");
@@ -796,18 +793,19 @@ const printPythonCode = (frame: PreEditableFrame) => {
         frame.Yvalue +
         ", " +
         frame.seconds +
-        ""
+        ")"
     );
   } else if (frame.kind === "wait") {
-    py_text = py_text.concat("pytch.wait_seconds( " + frame.seconds);
+    py_text = py_text.concat("pytch.wait_seconds( " + frame.seconds+")");
   } else if (frame.kind === "spriteClicked") {
     py_text = py_text.concat("@pytch.when_this_sprite_clicked");
   } else if (frame.kind === "flagClicked") {
   py_text = py_text.concat("@pytch.when_green_flag_clicked");
   } else if (frame.kind === "keyPressed") {
   py_text = py_text.concat("@pytch.when_key_pressed("+frame.key_name+")");
+  } else if (frame.kind === "sayforseconds") {
+  py_text = py_text.concat('self.say_for_seconds('+frame.text+', '+frame.seconds+")");
   }
-  console.log(py_text);
   return py_text;
 };
 
@@ -840,10 +838,9 @@ export const PythonCode = (frames: Array<PreEditableFrame>): string => {
   let codeLines = [py_text];
 
   printPreorder(rootFrame, codeLines);
-  //console.log(codeLines);
-  //return codeLines.join("");
-  let tempcode = 'import pytch\n\nclass DoubleSnake(pytch.Sprite):\n    Costumes = ["python-logo.png"]\n    @pytch.when_this_sprite_clicked\n    def say_hello(self):\n        self.say_for_seconds("Hello!", 2.0)\n    @pytch.when_key_pressed("ArrowLeft")\n    def move_left(self):\n        self.change_x(-10)\n    @pytch.when_key_pressed("ArrowRight")\n    def move_right(self):\n        self.change_x(10)\nclass GreenBurst(pytch.Stage):\n    Backdrops = ["green-burst.jpg"]'; 
+  
+  //let tempcode = 'import pytch\n\nclass DoubleSnake(pytch.Sprite):\n    Costumes = ["python-logo.png"]\n    @pytch.when_this_sprite_clicked\n    def say_hello(self):\n        self.say_for_seconds("Hello!", 2.0)\n    @pytch.when_key_pressed("ArrowLeft")\n    def move_left(self):\n        self.change_x(-10)\n    @pytch.when_key_pressed("ArrowRight")\n    def move_right(self):\n        self.change_x(10)\nclass GreenBurst(pytch.Stage):\n    Backdrops = ["green-burst.jpg"]'; 
 
-  console.log(tempcode);
-  return tempcode;
+  console.log(codeLines.join(""));
+  return codeLines.join("");
 };

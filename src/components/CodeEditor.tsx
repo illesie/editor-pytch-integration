@@ -318,13 +318,6 @@ export const FrameControls = () => {
         </div>
         Assignment
       </Button>
-      <Button className="frame-control-buttons" onClick={addStatementFrame}>
-        <div className="button-icon">
-          {" "}
-          <FaCode size={15} />
-        </div>
-        Statement
-      </Button>
       <Button className="frame-control-buttons" onClick={addPrintFrame}>
         <div className="button-icon">
           {" "}
@@ -352,6 +345,13 @@ export const FrameControls = () => {
           <FaCircleNotch size={15} />
         </div>
         While Loop
+      </Button>
+      <Button className="frame-control-buttons" onClick={addStatementFrame}>
+        <div className="button-icon">
+          {" "}
+          <FaCode size={15} />
+        </div>
+        Statement
       </Button>
       Advanced Frames
       <Button className="frame-control-buttons" onClick={addClassFrame}>

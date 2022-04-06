@@ -25,7 +25,7 @@ export const SayForSecondsFrame: React.FC<Editable<SayForSecondsFrameT>> = (prop
         }
 
         const onSecChange = (value:string) => {
-          editState.modify(makeSayForSecondsFrame({ text: value , seconds:props.frame.seconds}));
+          editState.modify(makeSayForSecondsFrame({ text: props.frame.text , seconds: value}));
         }
 
       return (
