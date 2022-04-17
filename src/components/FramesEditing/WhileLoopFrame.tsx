@@ -19,7 +19,7 @@ export const WhileLoopFrame: React.FC<Editable<WhileLoopFrameT>> = (props) => {
 
   switch (editState.status) {
     case "saved":
-      return <div> {"while "} {props.frame.condition} {":"}
+      return <div> {"while "} <span className="changeableText">{props.frame.condition}</span> {":"}
       <div>
         {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
       </div>

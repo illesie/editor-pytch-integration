@@ -6,22 +6,43 @@ import {
   makeAssignmentFrame,
 } from "../../model/frames-editing";
 
-export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (props) => {
-
+export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (
+  props
+) => {
   const editState = props.editState;
 
   switch (editState.status) {
     case "saved":
-      return <div> {props.frame.variableName} {" = "} {props.frame.valueText}</div>;
+      return (
+        <div>
+          {" "}
+          <span className="changeableText">
+            {props.frame.variableName}
+          </span>
+          {" = "} 
+          <span className="changeableText">
+          {props.frame.valueText}
+          </span>
+        </div>
+      );
     case "being-edited": {
+      const onTextChange = (value: string) => {
+        editState.modify(
+          makeAssignmentFrame({
+            variableName: value,
+            valueText: props.frame.valueText,
+          })
+        );
+      };
 
-      const onTextChange = (value:string) => {
-        editState.modify(makeAssignmentFrame({ variableName: value, valueText:props.frame.valueText }));
-      }
-
-      const onValueTextChange = (value:string) => {
-        editState.modify(makeAssignmentFrame({ variableName:props.frame.variableName, valueText: value }));
-      }
+      const onValueTextChange = (value: string) => {
+        editState.modify(
+          makeAssignmentFrame({
+            variableName: props.frame.variableName,
+            valueText: value,
+          })
+        );
+      };
 
       return (
         <div>

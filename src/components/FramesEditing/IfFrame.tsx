@@ -19,7 +19,7 @@ export const IfFrame: React.FC<Editable<IfFrameT>> = (props) => {
 
   switch (editState.status) {
     case "saved":
-      return <div> {"if "} {props.frame.condition} {":"}
+      return <div> {"if "} <span className="changeableText">{props.frame.condition}</span> {":"}
       <div>
         {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
       </div>

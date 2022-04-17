@@ -203,7 +203,7 @@ export const FrameControls = () => {
   };
 
   const addDefFrame = () => {
-    const newFrame = makeDefFrame({ name: "", body: [] });
+    const newFrame = makeDefFrame({ name: " ", body: [] });
     const InvisibleFrame = makeInvisibleFrame();
     newFrame.body = [
       {

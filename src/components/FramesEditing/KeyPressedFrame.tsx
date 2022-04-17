@@ -10,7 +10,7 @@ export const KeyPressedFrame: React.FC<Editable<KeyPressedFrameT>> = (props) => 
   const editState = props.editState;
   switch (editState.status) {
     case "saved":
-      return <div> {"@pytch.when_key_pressed("} {props.frame.key_name} {")"}</div>;
+      return <div> {"@pytch.when_key_pressed("} <span className="changeableText">{props.frame.key_name}</span> {")"}</div>;
     case "being-edited": {
 
       const onTextChange = (value:string) => {

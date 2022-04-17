@@ -7,17 +7,19 @@ import {
 } from "../../model/frames-editing";
 
 export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
-
   const editState = props.editState;
   switch (editState.status) {
     case "saved":
-      return <div> {props.frame.statementText}</div>;
+      return (
+        <div>
+          <span className="changeableText"> {props.frame.statementText} </span>
+        </div>
+      );
     case "being-edited": {
-      
-      const onTextChange = (value:string) => {
+      const onTextChange = (value: string) => {
         editState.modify(makeStatementFrame({ statementText: value }));
-      }
-      
+      };
+
       return (
         <div>
           <Form.Control

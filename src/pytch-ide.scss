@@ -813,12 +813,21 @@ div.spacer-instead-of-resizer {
       border-color: #9999CC;
       background-color: #eee;
       padding: 2px;
+      padding-bottom: 4px;
       margin: 0rem 0px;
       margin-left: 10px;
       font-family: "Courier New", Courier, monospace;
       &:hover {
         background-color: #f8f8f8;
       }
+    }
+    .changeableText {
+      box-shadow: 2px 2px 6px #aaa;
+      border-radius: 5px;
+      display: inline-table;
+      min-width: 1em;
+      min-height: 1em;
+      padding: 0.2em;
     }
     .index-button {
       height: 5px;

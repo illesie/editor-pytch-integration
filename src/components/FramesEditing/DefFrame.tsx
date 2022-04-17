@@ -19,7 +19,7 @@ export const DefFrame: React.FC<Editable<DefFrameT>> = (props) => {
 
   switch (editState.status) {
     case "saved":
-      return <div> {"def "} {props.frame.name} {"(self):"}
+      return <div> {"def "} <span className="changeableText">{props.frame.name}</span> {"(self):"}
       <div>
         {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
       </div>

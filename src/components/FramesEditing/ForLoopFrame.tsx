@@ -19,7 +19,7 @@ export const ForLoopFrame: React.FC<Editable<ForLoopFrameT>> = (props) => {
 
   switch (editState.status) {
     case "saved":
-      return <div> {"for "} {props.frame.condition} {":"}
+      return <div> {"for "} <span className="changeableText">{props.frame.condition}</span> {":"}
       <div>
         {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
       </div>

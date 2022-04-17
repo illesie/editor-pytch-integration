@@ -14,7 +14,9 @@ export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
       return (
         <div>
           {" pytch.wait_seconds( "}
+          <span className="changeableText">
           {props.frame.seconds} {" )"}
+          </span>
         </div>
       );
     case "being-edited": {
