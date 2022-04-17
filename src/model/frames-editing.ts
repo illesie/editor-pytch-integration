@@ -7,6 +7,7 @@ type FrameBase<KindLiteral extends string> = {
   id: number;
   kind: KindLiteral;
   depth: number;
+  isIndexSelected: boolean,
 };
 
 const nextId = (() => {
@@ -27,6 +28,7 @@ export const makeCommentFrame = (core: CommentCore): CommentFrame => ({
   id: nextId(),
   kind: "comment",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -42,6 +44,7 @@ export const makeStatementFrame = (core: StatementCore): StatementFrame => ({
   id: nextId(),
   kind: "statement",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -57,6 +60,7 @@ export const makePrintFrame = (core: PrintCore): PrintFrame => ({
   id: nextId(),
   kind: "print",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -72,6 +76,7 @@ export const makeAssignmentFrame = (core: AssignmentCore): AssignmentFrame => ({
   id: nextId(),
   kind: "assignment",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -89,6 +94,7 @@ export const makeListAssignmentFrame = (
   id: nextId(),
   kind: "list",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -104,6 +110,7 @@ export const makeIfFrame = (core: IfCore): IfFrame => ({
   id: nextId(),
   kind: "if",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -119,6 +126,7 @@ export const makeForLoopFrame = (core: ForLoopCore): ForLoopFrame => ({
   id: nextId(),
   kind: "for",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -134,6 +142,7 @@ export const makeWhileLoopFrame = (core: WhileLoopCore): WhileLoopFrame => ({
   id: nextId(),
   kind: "while",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -149,6 +158,7 @@ export const makeClassFrame = (core: ClassCore): ClassFrame => ({
   id: nextId(),
   kind: "class",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -164,6 +174,7 @@ export const makeDefFrame = (core: DefCore): DefFrame => ({
   id: nextId(),
   kind: "def",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -180,6 +191,7 @@ export const makeGlideFrame = (core: GlideCore): GlideFrame => ({
   id: nextId(),
   kind: "glide",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -197,6 +209,7 @@ export const makeSayForSecondsFrame = (
   id: nextId(),
   kind: "sayforseconds",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -211,6 +224,7 @@ export const makeWaitFrame = (core: WaitCore): WaitFrame => ({
   id: nextId(),
   kind: "wait",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -221,6 +235,7 @@ export const makeInvisibleFrame = (): InvisibleFrame => ({
   id: nextId(),
   kind: "invisible",
   depth: 0,
+  isIndexSelected: false,
 });
 
 //Actions
@@ -229,6 +244,7 @@ export const makeSpriteClickedFrame = (): SpriteClickedFrame => ({
   id: nextId(),
   kind: "spriteClicked",
   depth: 0,
+  isIndexSelected: false,
 });
 
 export type FlagClickedFrame = FrameBase<"flagClicked">;
@@ -236,6 +252,7 @@ export const makeFlagClickedFrame = (): FlagClickedFrame => ({
   id: nextId(),
   kind: "flagClicked",
   depth: 0,
+  isIndexSelected: false,
 });
 
 // Comment
@@ -250,6 +267,7 @@ export const makeKeyPressedFrame = (core: KeyPressedCore): KeyPressedFrame => ({
   id: nextId(),
   kind: "keyPressed",
   depth: 0,
+  isIndexSelected: false,
   ...core,
 });
 
@@ -401,6 +419,7 @@ const findIndexPath = (
 
   path.push(frame.id);
   if (frame.id === targetId) {
+    frame.isIndexSelected = true;
     return true;
   } else {
     //if (complexFrameKinds.includes(frame.kind)) {
@@ -422,6 +441,15 @@ const saveFrameHelper = (frames: PreEditableFrame[]) => {
       saveFrameHelper(frame.body);
     }
     frame.editStatus = "saved";
+  });
+};
+
+const unSelectIndexHelper = (frames: PreEditableFrame[]) => {
+  frames.forEach((frame) => {
+    if ('body' in frame) {
+      unSelectIndexHelper(frame.body);
+    }
+    frame.isIndexSelected = false;
   });
 };
 
@@ -456,12 +484,14 @@ export const framesEditor: IFramesEditor = {
       editStatus:"saved",
       name: "MySprite",
       depth: 0,
+      isIndexSelected: false,
       body: [
         { 
           id: 1000,
           kind: "invisible",
           editStatus:"saved",
           depth: 1,
+          isIndexSelected: false,
         },
         { 
           id: 1001,
@@ -470,18 +500,21 @@ export const framesEditor: IFramesEditor = {
           valueText: '["Snake.png"]',
           editStatus:"saved",
           depth: 1,
+          isIndexSelected: false,
         },
         {
           id:1002,
           kind: "flagClicked",
           editStatus:"saved",
           depth: 1,
+          isIndexSelected: false,
         },
         {
           id:1003,
           kind: "def",
           editStatus:"saved",
           depth: 1,
+          isIndexSelected: false,
           name: "speak",
           body: [
             { 
@@ -489,6 +522,7 @@ export const framesEditor: IFramesEditor = {
               kind: "invisible",
               editStatus:"saved",
               depth: 2,
+              isIndexSelected: false,
             },
             {
               id:1005,
@@ -497,6 +531,7 @@ export const framesEditor: IFramesEditor = {
               text: '"Hello"',
               editStatus:"saved",
               depth: 2,
+              isIndexSelected: false,
             }
           ]
         },
@@ -518,6 +553,7 @@ export const framesEditor: IFramesEditor = {
       condition: "",
       depth: -1,
       body: state.frames,
+      isIndexSelected: false,
     };
 
     const found = findIndexPath(state.index_path, rootFrame, frame.id);
@@ -559,6 +595,7 @@ export const framesEditor: IFramesEditor = {
       condition: "",
       body: state.frames,
       depth: -1,
+      isIndexSelected: false,
     };
 
     const found = findIndexPath(
@@ -617,6 +654,7 @@ export const framesEditor: IFramesEditor = {
       condition: "",
       body: state.frames,
       depth: -1,
+      isIndexSelected: false,
     };
 
     const found = findIndexPath(state.index_path, rootFrame, frame.id);
@@ -657,8 +695,9 @@ export const framesEditor: IFramesEditor = {
       condition: "",
       body: state.frames,
       depth: -1,
+      isIndexSelected: false,
     };
-
+    unSelectIndexHelper(state.frames);
     const found = findIndexPath(state.index_path, rootFrame, current_frame.id);
     state.index_path.shift();
   }),
@@ -833,6 +872,7 @@ export const PythonCode = (frames: Array<PreEditableFrame>): string => {
     editStatus: "saved",
     body: frames,
     depth: -1,
+    isIndexSelected: false,
   };
 
   let codeLines = [py_text];

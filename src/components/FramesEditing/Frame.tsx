@@ -52,16 +52,6 @@ const FrameContent: React.FC<Editable<FrameT>> = (props) => {
 };
 
 export const Frame: React.FC<Editable<FrameT>> = (props) => {
-  if (props.frame.kind == "invisible") {
-    return (
-      <div>
-        <Button
-          className="index-button"
-          onClick={() => props.editState.selectIndex()}
-        />
-      </div>
-    );
-  }
 
   var buttons = ((editState) => {
     switch (editState.status) {
@@ -89,7 +79,34 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
         );
     }
   })(props.editState);
-  
+
+  var indexButton = ((editState) => {
+    switch (props.frame.isIndexSelected) {
+      case false:
+        return (
+          <div>
+            <div
+              className="index-button"
+              onClick={() => editState.selectIndex()}
+            />
+          </div>
+        );
+      case true:
+        return (
+          <div>
+            <div
+              className="selected-index-button"
+              onClick={() => props.editState.selectIndex()}
+            />
+          </div>
+        );
+    }
+  })(props.editState);
+
+  if (props.frame.kind == "invisible") {
+    return <div> {indexButton} </div>;
+  }
+
   if(props.frame.kind == 'class'){
     buttons = <></>;
   }
@@ -123,10 +140,7 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
               <FrameContent {...props} />
             </div>
           </div>
-          <Button
-            className="index-button"
-            onClick={() => props.editState.selectIndex()}
-          />
+          <div>{indexButton}</div>
         </>
       );
     case "being-edited":
@@ -138,10 +152,7 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
               <FrameContent {...props} />
             </div>
           </div>
-          <Button
-            className="index-button"
-            onClick={() => props.editState.selectIndex()}
-          />
+          {indexButton}
         </>
       );
   }
