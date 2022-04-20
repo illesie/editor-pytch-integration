@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import AceEditor from "react-ace";
+import React from "react";
+// import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-searchbox";
 import { useStoreState, useStoreActions } from "../store";
-import { setAceController } from "../skulpt-connection/code-editor";
-import { IAceEditor } from "react-ace/lib/types";
-import { PytchAceAutoCompleter } from "../skulpt-connection/code-completion";
-import { failIfNull } from "../utils";
-import { HelpSidebar, HelpSidebarOpenControl } from "./HelpSidebar";
+// import AceEditor from "react-ace";
+// import { setAceController } from "../skulpt-connection/code-editor";
+// import { IAceEditor } from "react-ace/lib/types";
+// import { PytchAceAutoCompleter } from "../skulpt-connection/code-completion";
+// import { failIfNull } from "../utils";
 import { CodeAsFrames } from "./FramesEditing/CodeAsFrames";
 import {
   makeEditable,
@@ -41,9 +41,7 @@ import {
   FaCircleNotch,
   FaHandPointer,
 } from "react-icons/fa";
-import { InvisibleFrame } from "./FramesEditing/InvisibleFrame";
-import { SpriteClickedFrame } from "./FramesEditing/SpriteClickedFrame";
-
+/*
 const ReadOnlyOverlay = () => {
   const syncState = useStoreState((state) => state.activeProject.syncState);
 
@@ -64,7 +62,8 @@ const ReadOnlyOverlay = () => {
   }
   return null;
 };
-
+*/
+/*
 const CodeAceEditor = () => {
   const { codeTextOrPlaceholder, syncState } = useStoreState(
     (state) => state.activeProject
@@ -133,6 +132,7 @@ const CodeAceEditor = () => {
     </>
   );
 };
+*/
 
 export const FrameControls = () => {
   //const appendFrame = useStoreActions((actions) => actions.framesEditor.appendFrame);
@@ -167,7 +167,7 @@ export const FrameControls = () => {
   };
 
   const addForLoopFrame = () => {
-    const newFrame = makeForLoopFrame({ condition: "", body: [] });
+    const newFrame = makeForLoopFrame({ item: "", sequence:"", body: [] });
     const InvisibleFrame = makeInvisibleFrame();
     newFrame.body = [
       {
@@ -375,6 +375,7 @@ const CodeEditor = () => {
     <div className="frame-based-editor">
       <CodeAsFrames frames={editableFrames} />
       <FrameControls />
+      
     </div>
   );
 };

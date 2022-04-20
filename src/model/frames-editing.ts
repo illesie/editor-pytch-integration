@@ -116,7 +116,8 @@ export const makeIfFrame = (core: IfCore): IfFrame => ({
 
 // For Loop
 type ForLoopCore = {
-  condition: string,
+  item: string,
+  sequence: string,
   body: Array<PreEditableFrame>,
 };
 
@@ -458,24 +459,28 @@ export const framesEditor: IFramesEditor = {
   // Sample data to develop with; in the final thing this will be
   // instead be
   //
-  /*
+  
   frames: [
     {
-      id: 1000,
+      id: 10,
       kind: "class",
       editStatus:"saved",
       name: "MySprite",
+      depth: 0,
+      isIndexSelected: false,
       body: [
         { 
           id: 1000,
           kind: "invisible",
-          editStatus: "saved",
-          depth: 0,
+          editStatus:"saved",
+          depth: 1,
+          isIndexSelected: false,
         },
       ]
     }
-  ]
-  */
+  ],
+  
+  /*
   // so the editor starts empty.
   frames: [
     {
@@ -538,7 +543,7 @@ export const framesEditor: IFramesEditor = {
       ],
     },
   ],
-
+*/
   index_path: [0],
 
   editFrame: action((state, frame) => {
@@ -562,7 +567,7 @@ export const framesEditor: IFramesEditor = {
     const newFrames = state.frames.slice();
     var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
 
-    if (state.index_path.length == 1) {
+    if (state.index_path.length === 1) {
       newFrames[place[0]].editStatus = "being-edited";
       state.frames = newFrames;
     } else {
@@ -712,7 +717,7 @@ export const framesEditor: IFramesEditor = {
 
     const newFrames = state.frames.slice();
     var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
-    if (state.index_path.length == 1) {
+    if (state.index_path.length === 1) {
       newFrames.splice(place[0] + 1, 0, newEditableFrame);
     } else {
       var temp = newFrames[place[0]];
@@ -792,7 +797,7 @@ export const makeEditable = (
 
 const printPythonCode = (frame: PreEditableFrame) => {
   let py_text = "";
-  if(frame.depth == -1){
+  if(frame.depth === -1){
     return py_text;
   }
   
@@ -812,7 +817,7 @@ const printPythonCode = (frame: PreEditableFrame) => {
       "if " + frame.condition + ":");   
   } else if (frame.kind === "for") {
     py_text = py_text.concat(
-      "for " + frame.condition + ":");      
+      "for " + frame.item + " in " + frame.sequence + ":");      
   }else if (frame.kind === "while") {
     py_text = py_text.concat(
       "while " + frame.condition + ":");
@@ -849,7 +854,7 @@ const printPythonCode = (frame: PreEditableFrame) => {
 };
 
 const printPreorder = (frame: PreEditableFrame, codeLines: Array<string>) => {
-  if( frame.kind != "invisible" ){
+  if( frame.kind !== "invisible" ){
     codeLines.push(printPythonCode(frame) + "\n");
   }
 

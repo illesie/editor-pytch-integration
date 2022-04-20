@@ -76,6 +76,9 @@ export const StageControls: React.FC<StageControlsProps> = ({
   );
 
   const handleSave = () => requestSyncToStorage();
+  //const codeAsFrames = useStoreState((state) => state.framesEditor);
+  //const python_code = PythonCode(codeAsFrames.frames);
+  //const handleSave = () => {console.log(python_code)};
 
   const launchScreenshot = useStoreActions(
     (actions) => actions.userConfirmations.displayScreenshotInteraction.launch

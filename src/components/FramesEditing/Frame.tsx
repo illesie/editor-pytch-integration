@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
 
 import { Editable, Frame as FrameT } from "../../model/frames-editing";
 import { InvisibleFrame } from "./InvisibleFrame";
@@ -103,11 +102,11 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
     }
   })(props.editState);
 
-  if (props.frame.kind == "invisible") {
+  if (props.frame.kind === "invisible") {
     return <div> {indexButton} </div>;
   }
 
-  if(props.frame.kind == 'class'){
+  if(props.frame.kind === 'class'){
     buttons = <></>;
   }
 
