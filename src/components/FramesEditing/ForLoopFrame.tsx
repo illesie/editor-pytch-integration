@@ -42,7 +42,7 @@ export const ForLoopFrame: React.FC<Editable<ForLoopFrameT>> = (props) => {
           {" in "}
           <Form.Control
             type="text"
-            value={props.frame.item}
+            value={props.frame.sequence}
             onChange={(evt) => onSequenceChange(evt.target.value)}
           ></Form.Control>
           {":"}
