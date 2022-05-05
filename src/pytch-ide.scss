@@ -829,6 +829,15 @@ div.spacer-instead-of-resizer {
       min-height: 1em;
       padding: 0.2em;
     }
+    .changeableTextInvalid {
+      background-color: #fcc;
+      box-shadow: 0 0 0 1pt #F99;
+      border-radius: 5px;
+      display: inline-table;
+      min-width: 1em;
+      min-height: 1em;
+      padding: 0.2em;
+    }
     .index-button {
       height: 6px;
       opacity: 10%;

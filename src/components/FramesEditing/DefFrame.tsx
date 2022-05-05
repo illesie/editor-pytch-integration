@@ -17,9 +17,21 @@ export const DefFrame: React.FC<Editable<DefFrameT>> = (props) => {
     makeEditable(f, frameActions)
   );
 
+  const changeableBox = ((text: String, regex: any) => {
+    if(text == "" || !(text).match(regex)){
+      return (<span className="changeableTextInvalid"> {text} </span>);
+    }
+    else{
+      return (<span className="changeableText"> {text} </span>);
+    }
+    
+  });
+
+ var nameRegex = '^([a-zA-Z_$][0-9a-zA-Z_$,]*)$';
+
   switch (editState.status) {
     case "saved":
-      return <div> {"def "} <span className="changeableText">{props.frame.name}</span> {"(self):"}
+      return <div> {"def "} {changeableBox(props.frame.name, nameRegex)} {"(self):"}
       <div>
         {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
       </div>

@@ -1,3 +1,4 @@
+import { faVihara } from "@fortawesome/free-solid-svg-icons";
 import { Action, action, Actions } from "easy-peasy";
 import { assertNever } from "../utils";
 
@@ -459,8 +460,9 @@ export const framesEditor: IFramesEditor = {
   // Sample data to develop with; in the final thing this will be
   // instead be
   //
-  
+  /*
   frames: [
+    
     {
       id: 10,
       kind: "class",
@@ -479,8 +481,8 @@ export const framesEditor: IFramesEditor = {
       ]
     }
   ],
+  */
   
-  /*
   // so the editor starts empty.
   frames: [
     {
@@ -543,7 +545,6 @@ export const framesEditor: IFramesEditor = {
       ],
     },
   ],
-*/
   index_path: [0],
 
   editFrame: action((state, frame) => {
@@ -560,13 +561,13 @@ export const framesEditor: IFramesEditor = {
       body: state.frames,
       isIndexSelected: false,
     };
-
-    const found = findIndexPath(state.index_path, rootFrame, frame.id);
+    unSelectIndexHelper(state.frames);
+    var found = findIndexPath(state.index_path, rootFrame, frame.id);
     state.index_path.shift();
     //------------------------------------------------------------------
     const newFrames = state.frames.slice();
     var place = [frameIndexByIdOrFail(newFrames, state.index_path[0])];
-
+    
     if (state.index_path.length === 1) {
       newFrames[place[0]].editStatus = "being-edited";
       state.frames = newFrames;
@@ -580,6 +581,7 @@ export const framesEditor: IFramesEditor = {
       }
       temp.editStatus = "being-edited";
     }
+    found = findIndexPath(state.index_path, rootFrame, frame.id);
   }),
 
   saveFrame: action((state) => {
@@ -603,13 +605,14 @@ export const framesEditor: IFramesEditor = {
       isIndexSelected: false,
     };
 
-    const found = findIndexPath(
+    var found = findIndexPath(
       state.index_path,
       rootFrame,
       replaceDescriptor.idToReplace
     );
     state.index_path.shift();
     //------------------------------------------------------------------
+    unSelectIndexHelper(state.frames);
     var place = [frameIndexByIdOrFail(state.frames, state.index_path[0])];
 
     if (state.index_path.length == 1) {
@@ -642,6 +645,11 @@ export const framesEditor: IFramesEditor = {
         };
       }
     }
+    found = findIndexPath(
+      state.index_path,
+      rootFrame,
+      replaceDescriptor.idToReplace
+    );
   }),
 
   ////////////////////////////////////////////////////////////////////////

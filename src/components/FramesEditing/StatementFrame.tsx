@@ -6,13 +6,25 @@ import {
   makeStatementFrame,
 } from "../../model/frames-editing";
 
+
+const changeableBox = ((props: { frame: { statementText: String }; }) => {
+  if(props.frame.statementText == ""){
+    return (<span className="changeableTextInvalid"> {props.frame.statementText} </span>);
+  }
+  else{
+    return (<span className="changeableText"> {props.frame.statementText} </span>);
+  }
+  
+});
+
 export const StatementFrame: React.FC<Editable<StatementFrameT>> = (props) => {
   const editState = props.editState;
+
   switch (editState.status) {
     case "saved":
       return (
         <div>
-          <span className="changeableText"> {props.frame.statementText} </span>
+          {changeableBox(props)}
         </div>
       );
     case "being-edited": {

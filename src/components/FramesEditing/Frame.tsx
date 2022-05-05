@@ -105,11 +105,11 @@ export const Frame: React.FC<Editable<FrameT>> = (props) => {
   if (props.frame.kind === "invisible") {
     return <div> {indexButton} </div>;
   }
-
+/*
   if(props.frame.kind === 'class'){
     buttons = <></>;
   }
-
+*/
   if(['spriteClicked', 'flagClicked'].includes(props.frame.kind)){
     buttons = ((editState) => {
       switch (editState.status) {

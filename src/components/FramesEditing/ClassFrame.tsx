@@ -17,9 +17,23 @@ export const ClassFrame: React.FC<Editable<ClassFrameT>> = (props) => {
     makeEditable(f, frameActions)
   );
 
+  const changeableBox = ((text: String, regex: any) => {
+    if(text == "" || !(text).match(regex)){
+      return (<span className="changeableTextInvalid"> {text} </span>);
+    }
+    else{
+      return (<span className="changeableText"> {text} </span>);
+    }
+    
+  });
+
+ var nameRegex = '^([a-zA-Z_$][0-9a-zA-Z_$,]*)$';
+
   switch (editState.status) {
     case "saved":
-      return <div> {"class "} {props.frame.name} {"(pytch.Sprite):"}
+      return <div> {"class "}
+       {changeableBox(props.frame.name, nameRegex)} 
+       {"(pytch.Sprite):"}
       <div>
         {editableFrames.map((f) => <Frame {...f} key={f.frame.id} />)}
       </div>

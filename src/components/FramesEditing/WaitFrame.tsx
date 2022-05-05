@@ -8,15 +8,26 @@ import {
 
 export const WaitFrame: React.FC<Editable<WaitFrameT>> = (props) => {
 
+  const changeableBox = ((text: String, regex: any) => {
+    if(text == "" || !(text).match(regex)){
+      return (<span className="changeableTextInvalid"> {text} </span>);
+    }
+    else{
+      return (<span className="changeableText"> {text} </span>);
+    }
+    
+  });
+
+  var secRegex = '^([0-9a-zA-Z_$\.]*)$';
+
   const editState = props.editState;
   switch (editState.status) {
     case "saved":
       return (
         <div>
           {" pytch.wait_seconds( "}
-          <span className="changeableText">
-          {props.frame.seconds} {" )"}
-          </span>
+          {changeableBox(props.frame.seconds, secRegex)}
+          {" )"}
         </div>
       );
     case "being-edited": {

@@ -11,18 +11,27 @@ export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (
 ) => {
   const editState = props.editState;
 
+  const changeableBox = ((text: String, regex: any) => {
+    if(text == "" || !(text).match(regex)){
+      return (<span className="changeableTextInvalid"> {text} </span>);
+    }
+    else{
+      return (<span className="changeableText"> {text} </span>);
+    }
+    
+  });
+
+ var varNameRegex = '^([a-zA-Z_$][0-9a-zA-Z_$,]*)$';
+ var valueRegex = '.';
+
   switch (editState.status) {
     case "saved":
       return (
         <div>
           {" "}
-          <span className="changeableText">
-            {props.frame.variableName}
-          </span>
+            {changeableBox(props.frame.variableName, varNameRegex )}
           {" = "} 
-          <span className="changeableText">
-          {props.frame.valueText}
-          </span>
+            {changeableBox(props.frame.valueText, valueRegex)}
         </div>
       );
     case "being-edited": {
