@@ -21,7 +21,7 @@ export const AssignmentFrame: React.FC<Editable<AssignmentFrameT>> = (
     
   });
 
- var varNameRegex = '^([a-zA-Z_$][0-9a-zA-Z_$,]*)$';
+ var varNameRegex = '^([a-zA-Z_$\p{Zs}][0-9a-zA-Z_$,=\p{Zs}]*)$';
  var valueRegex = '.';
 
   switch (editState.status) {
